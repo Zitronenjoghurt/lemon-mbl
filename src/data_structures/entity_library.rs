@@ -1,5 +1,6 @@
 use crate::traits::has_data_file::HasDataFileYaml;
 use crate::traits::has_id::HasId;
+use crate::traits::has_internal_name::HasInternalName;
 use serde::Deserialize;
 use std::collections::HashMap;
 use std::fs;
@@ -33,7 +34,7 @@ where
 
 impl<T> EntityLibrary<T>
 where
-    T: Clone + HasId + HasDataFileYaml + for<'de> Deserialize<'de>,
+    T: Clone + HasId + HasDataFileYaml + HasInternalName + for<'de> Deserialize<'de>,
 {
     pub fn from_yaml() -> Result<Self, Box<dyn std::error::Error>> {
         let yaml_file_path = T::data_file_path();
@@ -41,8 +42,11 @@ where
         let yaml_entities: HashMap<String, T> = serde_yaml::from_str(&contents)?;
 
         let entities = yaml_entities
-            .values()
-            .map(|entity| (entity.id(), entity.clone()))
+            .into_iter()
+            .map(|(key, mut entity)| {
+                entity.set_internal_name(key);
+                (entity.id(), entity)
+            })
             .collect();
 
         Ok(EntityLibrary { entities })

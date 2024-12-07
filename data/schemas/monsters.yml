@@ -12,7 +12,7 @@ patternProperties:
       id:
         type: integer
         minimum: 0
-        maximum: 65636
+        maximum: 65535
         description: Unique identifier for the monster
       hp:
         type: integer

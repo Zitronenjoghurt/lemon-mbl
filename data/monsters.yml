@@ -1,0 +1,5 @@
+test_monster:
+  id: 0
+  hp: 10
+  attack: 12
+  defense: 15

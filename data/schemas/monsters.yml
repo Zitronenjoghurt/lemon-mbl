@@ -18,15 +18,22 @@ patternProperties:
         type: integer
         minimum: 1
         maximum: 65535
-        description: Hit points of the monster
       attack:
         type: integer
         minimum: 0
         maximum: 65535
-        description: Attack power of the monster
       defense:
         type: integer
         minimum: 0
         maximum: 65535
-        description: Defensive power of the monster
+      flags:
+        type: array
+        items:
+          $ref: '#/definitions/monsterFlag'
+        uniqueItems: true
     additionalProperties: false
+definitions:
+  monsterFlag:
+    type: string
+    enum:
+      - Flying

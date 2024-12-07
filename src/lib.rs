@@ -4,3 +4,4 @@ mod traits;
 mod directories;
 #[cfg(test)]
 mod tests;
+mod enums;

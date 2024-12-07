@@ -3,7 +3,7 @@ use lemon_mbl_game_data::game_data::GameData;
 use std::sync::Arc;
 
 #[test]
-pub fn test_encoded_binary_matches_yaml_data() {
+fn test_encoded_binary_matches_yaml_data() {
     // GameData freshly loaded from the yaml data files
     let loaded_game_data: GameData = GameData::load();
 

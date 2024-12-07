@@ -12,12 +12,8 @@ pub struct Monster {
 impl HasId for Monster {
     type Id = u16;
 
-    fn get_id(&self) -> u16 {
+    fn id(&self) -> u16 {
         self.id
-    }
-
-    fn set_id(&mut self, id: u16) {
-        self.id = id;
     }
 }
 

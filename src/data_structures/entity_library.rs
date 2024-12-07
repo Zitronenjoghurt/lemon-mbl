@@ -32,14 +32,14 @@ where
 
         let entities = yaml_entities
             .values()
-            .map(|entity| (entity.get_id(), entity.clone()))
+            .map(|entity| (entity.id(), entity.clone()))
             .collect();
 
         Ok(EntityLibrary { entities })
     }
 
     pub fn add(&mut self, entity: T) {
-        let id = entity.get_id();
+        let id = entity.id();
         self.entities.insert(id, entity);
     }
 

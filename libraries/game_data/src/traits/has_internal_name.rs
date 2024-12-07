@@ -1,4 +1,4 @@
 pub trait HasInternalName {
     fn internal_name(&self) -> &str;
-    fn set_internal_name(&mut self, name: String);
+    fn with_internal_name(self, name: String) -> Self;
 }

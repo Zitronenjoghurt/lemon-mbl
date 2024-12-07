@@ -1,15 +1,15 @@
-use crate::directories::monster_data_path;
 use crate::enums::monster_flags::MonsterFlag;
 use crate::traits::has_data_file::HasDataFileYaml;
 use crate::traits::has_id::HasId;
 use crate::traits::has_internal_name::HasInternalName;
+use lemon_mbl_utils::directories::monster_data_path;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MonsterData {
     id: u16,
-    #[serde(skip_deserializing)]
+    #[serde(default)]
     internal_name: String,
     hp: u16,
     attack: u16,
@@ -36,8 +36,11 @@ impl HasInternalName for MonsterData {
         &self.internal_name
     }
 
-    fn set_internal_name(&mut self, name: String) {
-        self.internal_name = name;
+    fn with_internal_name(self, name: String) -> Self {
+        Self {
+            internal_name: name,
+            ..self
+        }
     }
 }
 

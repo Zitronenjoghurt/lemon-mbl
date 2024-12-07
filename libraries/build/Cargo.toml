@@ -1,0 +1,8 @@
+[package]
+name = "lemon-mbl-build"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+lemon-mbl-game-data = { path = "../game_data" }
+lemon-mbl-utils = { path = "../utils" }

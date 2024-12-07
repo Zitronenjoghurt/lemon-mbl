@@ -6,7 +6,7 @@ use lemon_mbl_utils::directories::monster_data_path;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct MonsterData {
     id: u16,
     #[serde(default)]

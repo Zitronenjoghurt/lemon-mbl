@@ -5,24 +5,59 @@ patternProperties:
     type: object
     required:
       - id
-      - hp
-      - attack
-      - defense
+      - vitality
+      - potential
+      - control
+      - strength
+      - resilience
+      - speed
+      - technique
+      - agility
+      - vigilance
+      - focus
     properties:
       id:
         type: integer
         minimum: 0
         maximum: 65535
         description: Unique identifier for the monster
-      hp:
+      vitality:
         type: integer
         minimum: 1
         maximum: 65535
-      attack:
+      potential:
         type: integer
         minimum: 0
         maximum: 65535
-      defense:
+      control:
+        type: integer
+        minimum: 0
+        maximum: 65535
+      strength:
+        type: integer
+        minimum: 0
+        maximum: 65535
+      resilience:
+        type: integer
+        minimum: 0
+        maximum: 65535
+      speed:
+        type: integer
+        minimum: 0
+        maximum: 65535
+      technique:
+        type: integer
+        minimum: 0
+        maximum: 65535
+      agility:
+        type: integer
+        minimum: 0
+        maximum: 65535
+      vigilance:
+        type: integer
+        minimum: 0
+        maximum: 65535
+      focus:
         type: integer
         minimum: 0
         maximum: 65535

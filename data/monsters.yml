@@ -1,7 +1,14 @@
 test_monster:
   id: 0
-  hp: 10
-  attack: 12
-  defense: 15
+  vitality: 50
+  potential: 60
+  control: 10
+  strength: 13
+  resilience: 14
+  speed: 15
+  technique: 16
+  agility: 17
+  vigilance: 6000
+  focus: 19
   flags:
     - Flying

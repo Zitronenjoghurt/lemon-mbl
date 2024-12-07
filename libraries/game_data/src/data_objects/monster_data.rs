@@ -11,9 +11,16 @@ pub struct MonsterData {
     id: u16,
     #[serde(default)]
     internal_name: String,
-    hp: u16,
-    attack: u16,
-    defense: u16,
+    vitality: u16,
+    potential: u16,
+    control: u16,
+    strength: u16,
+    resilience: u16,
+    speed: u16,
+    technique: u16,
+    agility: u16,
+    vigilance: u16,
+    focus: u16,
     flags: Vec<MonsterFlag>,
 }
 
@@ -45,16 +52,44 @@ impl HasInternalName for MonsterData {
 }
 
 impl MonsterData {
-    pub fn hp(&self) -> u16 {
-        self.hp
+    pub fn vitality(&self) -> u16 {
+        self.vitality
     }
 
-    pub fn attack(&self) -> u16 {
-        self.attack
+    pub fn potential(&self) -> u16 {
+        self.potential
     }
 
-    pub fn defense(&self) -> u16 {
-        self.defense
+    pub fn control(&self) -> u16 {
+        self.control
+    }
+
+    pub fn strength(&self) -> u16 {
+        self.strength
+    }
+
+    pub fn resilience(&self) -> u16 {
+        self.resilience
+    }
+
+    pub fn speed(&self) -> u16 {
+        self.speed
+    }
+
+    pub fn technique(&self) -> u16 {
+        self.technique
+    }
+
+    pub fn agility(&self) -> u16 {
+        self.agility
+    }
+
+    pub fn vigilance(&self) -> u16 {
+        self.vigilance
+    }
+
+    pub fn focus(&self) -> u16 {
+        self.focus
     }
 
     pub fn flags(&self) -> &[MonsterFlag] {

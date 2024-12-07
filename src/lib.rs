@@ -5,6 +5,7 @@ use std::sync::Arc;
 #[cfg(test)]
 mod tests;
 mod entities;
+mod calculations;
 
 const STATIC_DATA: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/data.bin"));
 static GAME_DATA: Lazy<Arc<GameData>> = Lazy::new(||

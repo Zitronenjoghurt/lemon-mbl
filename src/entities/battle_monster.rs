@@ -1,3 +1,4 @@
+use crate::calculations::stats::energy_from_potential_and_vigilance;
 use crate::get_game_data;
 use lemon_mbl_game_data::data_objects::monster_data::MonsterData;
 use lemon_mbl_game_data::enums::monster_flags::MonsterFlag;
@@ -5,15 +6,24 @@ use lemon_mbl_game_data::traits::has_id::HasId;
 use lemon_mbl_game_data::traits::has_internal_name::HasInternalName;
 use std::sync::Arc;
 
+#[derive(Debug, Clone)]
 pub struct BattleMonster {
     data: Arc<MonsterData>,
     current_hp: u16,
+    desperation: u16,
+    energy: u16,
+    momentum: u16,
 }
 
 impl BattleMonster {
     pub fn from_data(data: Arc<MonsterData>) -> Self {
+        let energy = energy_from_potential_and_vigilance(data.potential(), data.vigilance());
+
         Self {
-            current_hp: data.hp(),
+            current_hp: data.vitality(),
+            desperation: 0,
+            momentum: 0,
+            energy,
             data,
         }
     }
@@ -31,6 +41,30 @@ impl BattleMonster {
         self.current_hp = hp;
     }
 
+    pub fn get_desperation(&self) -> u16 {
+        self.desperation
+    }
+
+    pub fn set_desperation(&mut self, desperation: u16) {
+        self.desperation = desperation;
+    }
+
+    pub fn get_momentum(&self) -> u16 {
+        self.momentum
+    }
+
+    pub fn set_momentum(&mut self, momentum: u16) {
+        self.momentum = momentum;
+    }
+
+    pub fn get_energy(&self) -> u16 {
+        self.energy
+    }
+
+    pub fn set_energy(&mut self, energy: u16) {
+        self.energy = energy;
+    }
+
     pub fn get_id(&self) -> u16 {
         self.data.id()
     }
@@ -40,15 +74,43 @@ impl BattleMonster {
     }
 
     pub fn get_max_hp(&self) -> u16 {
-        self.data.hp()
+        self.data.vitality()
     }
 
-    pub fn get_attack(&self) -> u16 {
-        self.data.attack()
+    pub fn get_potential(&self) -> u16 {
+        self.data.potential()
     }
 
-    pub fn get_defense(&self) -> u16 {
-        self.data.defense()
+    pub fn get_control(&self) -> u16 {
+        self.data.control()
+    }
+
+    pub fn get_strength(&self) -> u16 {
+        self.data.strength()
+    }
+
+    pub fn get_resilience(&self) -> u16 {
+        self.data.resilience()
+    }
+
+    pub fn get_speed(&self) -> u16 {
+        self.data.speed()
+    }
+
+    pub fn get_technique(&self) -> u16 {
+        self.data.technique()
+    }
+
+    pub fn get_agility(&self) -> u16 {
+        self.data.agility()
+    }
+
+    pub fn get_vigilance(&self) -> u16 {
+        self.data.vigilance()
+    }
+
+    pub fn get_focus(&self) -> u16 {
+        self.data.focus()
     }
 
     pub fn get_flags(&self) -> &[MonsterFlag] {

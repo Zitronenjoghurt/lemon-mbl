@@ -7,7 +7,7 @@ use std::fs;
 use std::sync::Arc;
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct EntityLibrary<T>
+pub struct DataLibrary<T>
 where
     T: Clone + HasId + Serialize + for<'de> Deserialize<'de>,
     T::Id: Serialize + for<'de> Deserialize<'de>,
@@ -15,17 +15,11 @@ where
     entities: HashMap<T::Id, Arc<T>>,
 }
 
-impl<T> EntityLibrary<T>
+impl<T> DataLibrary<T>
 where
     T: Clone + HasId + Serialize + for<'de> Deserialize<'de>,
     T::Id: Serialize + for<'de> Deserialize<'de>,
 {
-    pub fn new() -> Self {
-        EntityLibrary {
-            entities: HashMap::new()
-        }
-    }
-
     pub fn add(&mut self, entity: T) {
         let id = entity.id();
         self.entities.insert(id, Arc::new(entity));
@@ -36,7 +30,7 @@ where
     }
 }
 
-impl<T> EntityLibrary<T>
+impl<T> DataLibrary<T>
 where
     T: Clone + HasId + HasDataFileYaml + HasInternalName + Serialize + for<'de> Deserialize<'de>,
     T::Id: Serialize + for<'de> Deserialize<'de>,
@@ -54,11 +48,11 @@ where
             })
             .collect();
 
-        Ok(EntityLibrary { entities })
+        Ok(DataLibrary { entities })
     }
 }
 
-impl<T> Serialize for EntityLibrary<T>
+impl<T> Serialize for DataLibrary<T>
 where
     T: Clone + HasId + Serialize + for<'de> Deserialize<'de>,
     T::Id: Serialize + for<'de> Deserialize<'de>,
@@ -76,7 +70,7 @@ where
     }
 }
 
-impl<'de, T> Deserialize<'de> for EntityLibrary<T>
+impl<'de, T> Deserialize<'de> for DataLibrary<T>
 where
     T: Clone + HasId + Serialize + for<'d> Deserialize<'d>,
     T::Id: Serialize + for<'d> Deserialize<'d>,
@@ -92,6 +86,6 @@ where
             .map(|(k, v)| (k, Arc::new(v)))
             .collect();
 
-        Ok(EntityLibrary { entities })
+        Ok(DataLibrary { entities })
     }
 }

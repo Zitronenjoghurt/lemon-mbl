@@ -17,6 +17,10 @@ exclude = [
 name = "generate-data"
 path = "./bin/generate_data.rs"
 
+[[bin]]
+name = "test-generated-data"
+path = "./bin/test_generated_data.rs"
+
 [dependencies]
 bincode = "1.3.3"
 flate2 = "1.0.35"

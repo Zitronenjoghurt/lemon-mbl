@@ -12,3 +12,8 @@ test_monster:
   focus: 19
   flags:
     - Flying
+  physical_types:
+    - Construct
+  elemental_types:
+    - Force
+    - Light

@@ -57,3 +57,18 @@ An explanation of some of the base stats that every monster has.
 - Desperation
     - A stat which will go up the more dire the situation is for a monster, this might scale with certain actions or
       abilities
+
+## Physical Types
+
+Every monster will have 1 or more physical types, which describe what kind of material they consist of. These could be
+stuff like Organic, Slime, Ethereal, Construct, ... Attacking actions of certain damage types might have advantage or
+disadvantage against different kind of physical types. E.g. fire-based action might have an advantage against
+slime-based monsters.
+
+## Elemental Types
+
+Every monster will also have 1 or more elemental types, which describe what kind of power they can harness/control or
+what kind of power makes up their being. Similar to the physical type, different damage types might have
+advantage/disadvantage against certain elemental types. This creates an additional layer of complexity since now, if a
+slime is of elemental type frost and frost has advantage against fire-based actions, the previous fire weakness of the
+slime will be evened out.

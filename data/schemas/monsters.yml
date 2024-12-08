@@ -64,11 +64,37 @@ patternProperties:
       flags:
         type: array
         items:
-          $ref: '#/definitions/monsterFlag'
+          $ref: '#/definitions/flag'
+        uniqueItems: true
+      physical_types:
+        type: array
+        items:
+          $ref: '#/definitions/physicalType'
+        uniqueItems: true
+      elemental_types:
+        type: array
+        items:
+          $ref: '#/definitions/elementalType'
         uniqueItems: true
     additionalProperties: false
 definitions:
-  monsterFlag:
+  flag:
     type: string
     enum:
       - Flying
+  physicalType:
+    type: string
+    enum:
+      - Organic
+      - Slime
+      - Ethereal
+      - Construct
+  elementalType:
+    type: string
+    enum:
+      - Force
+      - Fire
+      - Frost
+      - Thunder
+      - Light
+      - Dark

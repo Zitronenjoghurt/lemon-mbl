@@ -1,4 +1,6 @@
+use crate::enums::monster_elemental_type::MonsterElementalType;
 use crate::enums::monster_flags::MonsterFlag;
+use crate::enums::monster_physical_type::MonsterPhysicalType;
 use crate::traits::has_data_file::HasDataFileYaml;
 use crate::traits::has_id::HasId;
 use crate::traits::has_internal_name::HasInternalName;
@@ -22,6 +24,8 @@ pub struct MonsterData {
     vigilance: u16,
     focus: u16,
     flags: Vec<MonsterFlag>,
+    physical_types: Vec<MonsterPhysicalType>,
+    elemental_types: Vec<MonsterElementalType>,
 }
 
 impl HasDataFileYaml for MonsterData {
@@ -104,7 +108,23 @@ impl MonsterData {
         &self.flags
     }
 
-    pub fn get_has_flag(&self, flag: MonsterFlag) -> bool {
+    pub fn has_flag(&self, flag: MonsterFlag) -> bool {
         self.flags.contains(&flag)
+    }
+
+    pub fn get_physical_types(&self) -> &[MonsterPhysicalType] {
+        &self.physical_types
+    }
+
+    pub fn has_physical_type(&self, physical_type: MonsterPhysicalType) -> bool {
+        self.physical_types.contains(&physical_type)
+    }
+
+    pub fn get_elemental_types(&self) -> &[MonsterElementalType] {
+        &self.elemental_types
+    }
+
+    pub fn has_elemental_type(&self, elemental_type: MonsterElementalType) -> bool {
+        self.elemental_types.contains(&elemental_type)
     }
 }

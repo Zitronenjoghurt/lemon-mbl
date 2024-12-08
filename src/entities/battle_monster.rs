@@ -1,5 +1,7 @@
 use crate::calculations::stats::energy_from_potential_and_vigilance;
+use crate::enums::monster_elemental_type::MonsterElementalType;
 use crate::enums::monster_flags::MonsterFlag;
+use crate::enums::monster_physical_type::MonsterPhysicalType;
 use crate::game_data::data_objects::monster_data::MonsterData;
 use crate::get_game_data;
 use crate::traits::has_id::HasId;
@@ -118,6 +120,22 @@ impl BattleMonster {
     }
 
     pub fn has_flag(&self, flag: MonsterFlag) -> bool {
-        self.data.get_has_flag(flag)
+        self.data.has_flag(flag)
+    }
+
+    pub fn get_physical_types(&self) -> &[MonsterPhysicalType] {
+        self.data.get_physical_types()
+    }
+
+    pub fn has_physical_type(&self, physical_type: MonsterPhysicalType) -> bool {
+        self.data.has_physical_type(physical_type)
+    }
+
+    pub fn get_elemental_types(&self) -> &[MonsterElementalType] {
+        self.data.get_elemental_types()
+    }
+
+    pub fn has_elemental_type(&self, elemental_type: MonsterElementalType) -> bool {
+        self.data.has_elemental_type(elemental_type)
     }
 }

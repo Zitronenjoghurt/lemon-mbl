@@ -1,4 +1,6 @@
+use crate::enums::monster_elemental_type::MonsterElementalType;
 use crate::enums::monster_flags::MonsterFlag;
+use crate::enums::monster_physical_type::MonsterPhysicalType;
 use crate::get_game_data;
 use crate::traits::has_id::HasId;
 use crate::traits::has_internal_name::HasInternalName;
@@ -22,5 +24,10 @@ fn test_monster_data_library() {
     assert_eq!(test_monster.get_vigilance(), 6000);
     assert_eq!(test_monster.get_focus(), 19);
     assert_eq!(test_monster.get_flags().len(), 1);
-    assert!(test_monster.get_has_flag(MonsterFlag::Flying))
+    assert!(test_monster.has_flag(MonsterFlag::Flying));
+    assert_eq!(test_monster.get_physical_types().len(), 1);
+    assert!(test_monster.has_physical_type(MonsterPhysicalType::Construct));
+    assert_eq!(test_monster.get_elemental_types().len(), 2);
+    assert!(test_monster.has_elemental_type(MonsterElementalType::Force));
+    assert!(test_monster.has_elemental_type(MonsterElementalType::Light));
 }

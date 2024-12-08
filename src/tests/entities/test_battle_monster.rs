@@ -1,5 +1,7 @@
 use crate::entities::battle_monster::BattleMonster;
+use crate::enums::monster_elemental_type::MonsterElementalType;
 use crate::enums::monster_flags::MonsterFlag;
+use crate::enums::monster_physical_type::MonsterPhysicalType;
 
 #[test]
 fn test_creation() {
@@ -22,4 +24,9 @@ fn test_creation() {
     assert_eq!(test_monster.get_energy(), 5);
     assert_eq!(test_monster.get_flags().len(), 1);
     assert!(test_monster.has_flag(MonsterFlag::Flying));
+    assert_eq!(test_monster.get_physical_types().len(), 1);
+    assert!(test_monster.has_physical_type(MonsterPhysicalType::Construct));
+    assert_eq!(test_monster.get_elemental_types().len(), 2);
+    assert!(test_monster.has_elemental_type(MonsterElementalType::Force));
+    assert!(test_monster.has_elemental_type(MonsterElementalType::Light));
 }

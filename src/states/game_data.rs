@@ -1,9 +1,6 @@
-pub mod data_objects;
-pub mod data_library;
-
-use crate::game_data::data_library::DataLibrary;
-use crate::game_data::data_objects::monster_data::MonsterData;
-use crate::game_data::data_objects::monster_images::MonsterImages;
+use crate::data_structures::data_library::DataLibrary;
+use crate::data_structures::monster_images::MonsterImages;
+use crate::entities::monster_data::MonsterData;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]

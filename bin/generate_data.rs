@@ -1,6 +1,6 @@
 use flate2::write::ZlibEncoder;
 use flate2::Compression;
-use lemon_mbl::game_data::GameData;
+use lemon_mbl::states::game_data::GameData;
 use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;

@@ -1,6 +1,6 @@
-use crate::game_data::GameData;
 use flate2::read::ZlibDecoder;
 use once_cell::sync::Lazy;
+use states::game_data::GameData;
 use std::io::Read;
 use std::sync::Arc;
 
@@ -8,12 +8,12 @@ use std::sync::Arc;
 mod tests;
 pub mod entities;
 pub mod calculations;
-pub mod game_data;
 pub mod enums;
 mod traits;
 mod utils;
-mod battle;
 mod serialization;
+mod data_structures;
+pub mod states;
 
 const STATIC_DATA: &[u8] = include_bytes!("../data/game_data.bin");
 static GAME_DATA: Lazy<Arc<GameData>> = Lazy::new(|| {

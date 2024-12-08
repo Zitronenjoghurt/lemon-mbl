@@ -1,5 +1,5 @@
-use lemon_mbl::game_data::GameData;
 use lemon_mbl::get_game_data;
+use lemon_mbl::states::game_data::GameData;
 use std::sync::Arc;
 
 fn main() {

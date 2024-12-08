@@ -1,8 +1,8 @@
 use crate::calculations::stats::energy_from_potential_and_vigilance;
+use crate::entities::monster_data::MonsterData;
 use crate::enums::monster_elemental_type::MonsterElementalType;
 use crate::enums::monster_flags::MonsterFlag;
 use crate::enums::monster_physical_type::MonsterPhysicalType;
-use crate::game_data::data_objects::monster_data::MonsterData;
 use crate::get_game_data;
 use crate::serialization::arc_ref;
 use crate::traits::has_id::HasId;

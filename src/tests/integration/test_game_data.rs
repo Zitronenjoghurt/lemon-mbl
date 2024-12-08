@@ -1,5 +1,5 @@
+use crate::game_data::GameData;
 use crate::get_game_data;
-use lemon_mbl_game_data::game_data::GameData;
 use std::sync::Arc;
 
 #[test]

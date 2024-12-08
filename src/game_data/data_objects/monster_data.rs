@@ -2,7 +2,7 @@ use crate::enums::monster_flags::MonsterFlag;
 use crate::traits::has_data_file::HasDataFileYaml;
 use crate::traits::has_id::HasId;
 use crate::traits::has_internal_name::HasInternalName;
-use lemon_mbl_utils::directories::monster_data_path;
+use crate::utils::directories::monster_data_path;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 

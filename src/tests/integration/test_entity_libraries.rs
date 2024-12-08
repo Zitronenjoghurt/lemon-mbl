@@ -1,7 +1,7 @@
+use crate::enums::monster_flags::MonsterFlag;
 use crate::get_game_data;
-use lemon_mbl_game_data::enums::monster_flags::MonsterFlag;
-use lemon_mbl_game_data::traits::has_id::HasId;
-use lemon_mbl_game_data::traits::has_internal_name::HasInternalName;
+use crate::traits::has_id::HasId;
+use crate::traits::has_internal_name::HasInternalName;
 
 #[test]
 fn test_monster_data_library() {

@@ -1,5 +1,5 @@
 use crate::entities::battle_monster::BattleMonster;
-use lemon_mbl_game_data::enums::monster_flags::MonsterFlag;
+use crate::enums::monster_flags::MonsterFlag;
 
 #[test]
 fn test_creation() {

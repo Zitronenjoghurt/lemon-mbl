@@ -1,9 +1,9 @@
 use crate::calculations::stats::energy_from_potential_and_vigilance;
+use crate::enums::monster_flags::MonsterFlag;
+use crate::game_data::data_objects::monster_data::MonsterData;
 use crate::get_game_data;
-use lemon_mbl_game_data::data_objects::monster_data::MonsterData;
-use lemon_mbl_game_data::enums::monster_flags::MonsterFlag;
-use lemon_mbl_game_data::traits::has_id::HasId;
-use lemon_mbl_game_data::traits::has_internal_name::HasInternalName;
+use crate::traits::has_id::HasId;
+use crate::traits::has_internal_name::HasInternalName;
 use std::sync::Arc;
 
 #[derive(Debug, Clone)]

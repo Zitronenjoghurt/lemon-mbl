@@ -1,5 +1,5 @@
+use crate::utils::directories::monster_assets_path;
 use image::{DynamicImage, ImageError};
-use lemon_mbl_utils::directories::monster_assets_path;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;

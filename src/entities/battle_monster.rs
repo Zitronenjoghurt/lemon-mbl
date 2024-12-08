@@ -17,10 +17,10 @@ pub struct BattleMonster {
 
 impl BattleMonster {
     pub fn from_data(data: Arc<MonsterData>) -> Self {
-        let energy = energy_from_potential_and_vigilance(data.potential(), data.vigilance());
+        let energy = energy_from_potential_and_vigilance(data.get_potential(), data.get_vigilance());
 
         Self {
-            current_hp: data.vitality(),
+            current_hp: data.get_vitality(),
             desperation: 0,
             momentum: 0,
             energy,
@@ -74,50 +74,50 @@ impl BattleMonster {
     }
 
     pub fn get_max_hp(&self) -> u16 {
-        self.data.vitality()
+        self.data.get_vitality()
     }
 
     pub fn get_potential(&self) -> u16 {
-        self.data.potential()
+        self.data.get_potential()
     }
 
     pub fn get_control(&self) -> u16 {
-        self.data.control()
+        self.data.get_control()
     }
 
     pub fn get_strength(&self) -> u16 {
-        self.data.strength()
+        self.data.get_strength()
     }
 
     pub fn get_resilience(&self) -> u16 {
-        self.data.resilience()
+        self.data.get_resilience()
     }
 
     pub fn get_speed(&self) -> u16 {
-        self.data.speed()
+        self.data.get_speed()
     }
 
     pub fn get_technique(&self) -> u16 {
-        self.data.technique()
+        self.data.get_technique()
     }
 
     pub fn get_agility(&self) -> u16 {
-        self.data.agility()
+        self.data.get_agility()
     }
 
     pub fn get_vigilance(&self) -> u16 {
-        self.data.vigilance()
+        self.data.get_vigilance()
     }
 
     pub fn get_focus(&self) -> u16 {
-        self.data.focus()
+        self.data.get_focus()
     }
 
     pub fn get_flags(&self) -> &[MonsterFlag] {
-        self.data.flags()
+        self.data.get_flags()
     }
 
     pub fn has_flag(&self, flag: MonsterFlag) -> bool {
-        self.data.has_flag(flag)
+        self.data.get_has_flag(flag)
     }
 }

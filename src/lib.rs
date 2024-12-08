@@ -10,8 +10,8 @@ pub mod entities;
 pub mod calculations;
 pub mod game_data;
 pub mod enums;
-pub mod traits;
-pub mod utils;
+mod traits;
+mod utils;
 
 const STATIC_DATA: &[u8] = include_bytes!("../data/game_data.bin");
 static GAME_DATA: Lazy<Arc<GameData>> = Lazy::new(|| {

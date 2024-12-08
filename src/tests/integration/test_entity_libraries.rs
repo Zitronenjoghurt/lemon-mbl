@@ -11,16 +11,16 @@ fn test_monster_data_library() {
 
     assert_eq!(test_monster.internal_name(), "test_monster");
     assert_eq!(test_monster.id(), 0);
-    assert_eq!(test_monster.vitality(), 50);
-    assert_eq!(test_monster.potential(), 60);
-    assert_eq!(test_monster.control(), 10);
-    assert_eq!(test_monster.strength(), 13);
-    assert_eq!(test_monster.resilience(), 14);
-    assert_eq!(test_monster.speed(), 15);
-    assert_eq!(test_monster.technique(), 16);
-    assert_eq!(test_monster.agility(), 17);
-    assert_eq!(test_monster.vigilance(), 6000);
-    assert_eq!(test_monster.focus(), 19);
-    assert_eq!(test_monster.flags().len(), 1);
-    assert!(test_monster.has_flag(MonsterFlag::Flying))
+    assert_eq!(test_monster.get_vitality(), 50);
+    assert_eq!(test_monster.get_potential(), 60);
+    assert_eq!(test_monster.get_control(), 10);
+    assert_eq!(test_monster.get_strength(), 13);
+    assert_eq!(test_monster.get_resilience(), 14);
+    assert_eq!(test_monster.get_speed(), 15);
+    assert_eq!(test_monster.get_technique(), 16);
+    assert_eq!(test_monster.get_agility(), 17);
+    assert_eq!(test_monster.get_vigilance(), 6000);
+    assert_eq!(test_monster.get_focus(), 19);
+    assert_eq!(test_monster.get_flags().len(), 1);
+    assert!(test_monster.get_has_flag(MonsterFlag::Flying))
 }

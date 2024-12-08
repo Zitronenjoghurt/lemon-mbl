@@ -1,12 +1,15 @@
 use crate::enums::monster_elemental_type::MonsterElementalType;
 use crate::enums::monster_flags::MonsterFlag;
 use crate::enums::monster_physical_type::MonsterPhysicalType;
+use crate::get_game_data;
+use crate::serialization::arc_ref::ArcRefFromKey;
 use crate::traits::has_data_file::HasDataFileYaml;
 use crate::traits::has_id::HasId;
 use crate::traits::has_internal_name::HasInternalName;
 use crate::utils::directories::monster_data_path;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
+use std::sync::Arc;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct MonsterData {
@@ -26,6 +29,21 @@ pub struct MonsterData {
     flags: Vec<MonsterFlag>,
     physical_types: Vec<MonsterPhysicalType>,
     elemental_types: Vec<MonsterElementalType>,
+}
+
+impl ArcRefFromKey for MonsterData {
+    type Key = u16;
+
+    fn to_key(&self) -> Self::Key {
+        self.get_id()
+    }
+
+    fn from_key(key: &u16) -> Option<Arc<Self>>
+    where
+        Self: Sized,
+    {
+        get_game_data().monsters.get(*key).cloned()
+    }
 }
 
 impl HasDataFileYaml for MonsterData {

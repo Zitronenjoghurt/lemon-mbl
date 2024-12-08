@@ -12,6 +12,8 @@ pub mod game_data;
 pub mod enums;
 mod traits;
 mod utils;
+mod battle;
+mod serialization;
 
 const STATIC_DATA: &[u8] = include_bytes!("../data/game_data.bin");
 static GAME_DATA: Lazy<Arc<GameData>> = Lazy::new(|| {

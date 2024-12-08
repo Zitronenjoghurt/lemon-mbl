@@ -4,12 +4,15 @@ use crate::enums::monster_flags::MonsterFlag;
 use crate::enums::monster_physical_type::MonsterPhysicalType;
 use crate::game_data::data_objects::monster_data::MonsterData;
 use crate::get_game_data;
+use crate::serialization::arc_ref;
 use crate::traits::has_id::HasId;
 use crate::traits::has_internal_name::HasInternalName;
+use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BattleMonster {
+    #[serde(with = "arc_ref")]
     data: Arc<MonsterData>,
     current_hp: u16,
     desperation: u16,

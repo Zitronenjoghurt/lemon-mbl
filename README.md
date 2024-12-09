@@ -1,6 +1,6 @@
 [![Rust](https://github.com/Zitronenjoghurt/lemon-mbl/actions/workflows/rust.yml/badge.svg)](https://github.com/Zitronenjoghurt/lemon-mbl/actions/workflows/rust.yml)
 [![codecov](https://codecov.io/gh/Zitronenjoghurt/lemon-mbl/graph/badge.svg?token=UM6T22YO17)](https://codecov.io/gh/Zitronenjoghurt/lemon-mbl)
-![](https://img.shields.io/crates/v/lemon-mbl?link=https%3A%2F%2Fcrates.io%2Fcrates%2Flemon-mbl)
+[![](https://img.shields.io/crates/v/lemon-mbl)](https://crates.io/crates/lemon-mbl)
 ![](https://tokei.rs/b1/github/Zitronenjoghurt/lemon-mbl?category=code&type=Rust&logo=https://simpleicons.org/icons/rust.svg)
 
 # LeMon - Monster Battle Library

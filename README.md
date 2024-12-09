@@ -72,3 +72,20 @@ what kind of power makes up their being. Similar to the physical type, different
 advantage/disadvantage against certain elemental types. This creates an additional layer of complexity since now, if a
 slime is of elemental type frost and frost has advantage against fire-based actions, the previous fire weakness of the
 slime will be evened out.
+
+# Story / Lore
+
+Work in progress. I'll continuously extend on those ideas, it's probably a bit random but might help to give a bit of
+context to this little "game". Inspirations are Persona, Pokemon and Mob Psycho.
+
+## The Veil
+
+The Veil is a ubiquitous field of energy that exists independent of the physical world. Because of some kind of
+imbalance, veil energy infiltrates the physical world where it's able to focus into so called 'Veil Nodes'
+which manifest into different kinds of monsters. Veil Nodes can pose a significant threat to humans as they are
+uncontrollable and unpredictable.
+
+## Veil Users
+
+Veil users have the innate ability to control veil energy. Perhaps there will be some kind of way to capture and
+manipulate Veil Nodes to fight for them.

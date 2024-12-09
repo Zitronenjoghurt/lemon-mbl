@@ -6,6 +6,7 @@ edition = "2021"
 license = "MIT"
 repository = "https://github.com/Zitronenjoghurt/lemon-mbl"
 exclude = [
+    ".assets/*",
     ".github/*",
     "data/schemas/*",
     "data/stats/*",

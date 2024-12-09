@@ -1,2 +1,2 @@
 mod test_entity_libraries;
-mod test_assets;
+mod test_game_data;

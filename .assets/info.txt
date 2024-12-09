@@ -1,0 +1,2 @@
+This directory will contain a mock-version of the original asset directory.
+Assets will be bundled into the game_data.bin and won't be accessible in its raw format from this GitHub page.

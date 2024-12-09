@@ -1,1 +1,3 @@
 mod test_battle_monster;
+mod test_stored_monster;
+mod test_monster_data;

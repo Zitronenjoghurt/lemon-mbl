@@ -9,7 +9,7 @@ mod tests;
 pub mod entities;
 pub mod calculations;
 pub mod enums;
-mod traits;
+pub mod traits;
 mod utils;
 mod serialization;
 mod data_structures;

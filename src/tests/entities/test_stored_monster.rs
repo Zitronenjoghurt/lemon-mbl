@@ -1,18 +1,18 @@
+use crate::entities::battle_monster::BattleMonster;
+use crate::entities::stored_monster::StoredMonster;
 use crate::enums::monster_elemental_type::MonsterElementalType;
 use crate::enums::monster_flags::MonsterFlag;
 use crate::enums::monster_physical_type::MonsterPhysicalType;
-use crate::get_game_data;
-use crate::traits::has_id::HasId;
-use crate::traits::has_internal_name::HasInternalName;
+use crate::traits::monster_data_access::MonsterDataAccess;
 
 #[test]
-fn test_monster_data_library() {
-    let game_data = get_game_data();
-    let monster_data_library = &game_data.monsters;
-    let test_monster = monster_data_library.get(0).unwrap();
+fn test_creation() {
+    let test_monster = StoredMonster::create(0).unwrap();
+    assert_eq!(test_monster.get_storage_id(), 0);
+    assert_eq!(test_monster.get_current_hp(), 50);
 
-    assert_eq!(test_monster.internal_name(), "test_monster");
-    assert_eq!(test_monster.id(), 0);
+    assert_eq!(test_monster.get_internal_name(), "test_monster");
+    assert_eq!(test_monster.get_id(), 0);
     assert_eq!(test_monster.get_vitality(), 50);
     assert_eq!(test_monster.get_potential(), 60);
     assert_eq!(test_monster.get_control(), 10);
@@ -30,4 +30,12 @@ fn test_monster_data_library() {
     assert_eq!(test_monster.get_elemental_types().len(), 2);
     assert!(test_monster.has_elemental_type(MonsterElementalType::Force));
     assert!(test_monster.has_elemental_type(MonsterElementalType::Light));
+}
+
+#[test]
+fn test_to_from_battle_monster() {
+    let test_monster = StoredMonster::create(0).unwrap();
+    let battle_monster = BattleMonster::from(test_monster.clone());
+    let test_monster_again = StoredMonster::from(battle_monster);
+    assert_eq!(test_monster, test_monster_again);
 }

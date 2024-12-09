@@ -32,6 +32,9 @@ jobs:
       - name: Mock assets directory
         run: mv .assets assets
 
+      - name: Regenerate game data with mocked assets
+        run: make gen-data
+
       - name: Run tests
         run: cargo test
 

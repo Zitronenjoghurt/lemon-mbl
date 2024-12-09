@@ -1,5 +1,6 @@
 [![Rust](https://github.com/Zitronenjoghurt/lemon-mbl/actions/workflows/rust.yml/badge.svg)](https://github.com/Zitronenjoghurt/lemon-mbl/actions/workflows/rust.yml)
 [![codecov](https://codecov.io/gh/Zitronenjoghurt/lemon-mbl/graph/badge.svg?token=UM6T22YO17)](https://codecov.io/gh/Zitronenjoghurt/lemon-mbl)
+![](https://img.shields.io/crates/v/lemon-mbl?link=https%3A%2F%2Fcrates.io%2Fcrates%2Flemon-mbl)
 ![](https://tokei.rs/b1/github/Zitronenjoghurt/lemon-mbl?category=code&type=Rust&logo=https://simpleicons.org/icons/rust.svg)
 
 # LeMon - Monster Battle Library
@@ -9,6 +10,22 @@
 This is a rust crate which contains game logic for simulated monster battles. The goals are to be easily extendable with
 new monsters, moves, abilities, etc. and to explore the structure of battle systems you would find in Pokemon or similar
 creature collectors.
+
+## Next Goal: v0.2.0
+
+**Functional battle game-loop**
+
+## Usage
+
+Install it in your rust project via:
+
+```
+cargo add lemon-mbl
+```
+
+## Examples
+
+Will be added once theres a stable API
 
 # Battle System
 

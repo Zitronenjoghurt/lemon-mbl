@@ -21,7 +21,12 @@ pub struct BattleMonster {
 }
 
 impl BattleMonster {
-    pub fn from_data(data: Arc<MonsterData>) -> Self {
+    pub fn create(id: u16) -> Option<Self> {
+        get_game_data().monsters.get(id)
+            .map(|data| Self::from_data(Arc::clone(data)))
+    }
+
+    fn from_data(data: Arc<MonsterData>) -> Self {
         let energy = energy_from_potential_and_vigilance(data.get_potential(), data.get_vigilance());
 
         Self {
@@ -31,11 +36,6 @@ impl BattleMonster {
             energy,
             data,
         }
-    }
-
-    pub fn create(id: u16) -> Option<Self> {
-        get_game_data().monsters.get(id)
-            .map(|data| Self::from_data(Arc::clone(data)))
     }
 
     pub fn get_current_hp(&self) -> u16 {

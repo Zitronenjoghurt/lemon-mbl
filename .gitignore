@@ -24,3 +24,4 @@ Cargo.lock
 .DS_Store
 assets
 cobertura.xml
+test_data

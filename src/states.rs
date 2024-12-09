@@ -1,3 +1,3 @@
-mod battle_state;
+pub mod battle_state;
 pub mod game_data;
-mod game_state;
+pub mod game_state;

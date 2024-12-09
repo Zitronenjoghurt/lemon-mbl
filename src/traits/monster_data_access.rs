@@ -1,5 +1,5 @@
 use crate::enums::monster_elemental_type::MonsterElementalType;
-use crate::enums::monster_flags::MonsterFlag;
+use crate::enums::monster_flag::MonsterFlag;
 use crate::enums::monster_physical_type::MonsterPhysicalType;
 
 pub trait MonsterDataAccess {

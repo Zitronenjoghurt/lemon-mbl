@@ -1,5 +1,5 @@
 use crate::enums::monster_elemental_type::MonsterElementalType;
-use crate::enums::monster_flags::MonsterFlag;
+use crate::enums::monster_flag::MonsterFlag;
 use crate::enums::monster_physical_type::MonsterPhysicalType;
 use crate::get_game_data;
 use crate::traits::monster_data_access::MonsterDataAccess;
@@ -9,9 +9,9 @@ fn test_data_integrity() {
     let game_data = get_game_data();
     let monster_data_library = &game_data.monsters;
     let test_monster = monster_data_library.get(0).unwrap();
-
-    assert_eq!(test_monster.get_internal_name(), "test_monster");
+    
     assert_eq!(test_monster.get_id(), 0);
+    assert_eq!(test_monster.get_internal_name(), "test_monster");
     assert_eq!(test_monster.get_vitality(), 50);
     assert_eq!(test_monster.get_potential(), 60);
     assert_eq!(test_monster.get_control(), 10);

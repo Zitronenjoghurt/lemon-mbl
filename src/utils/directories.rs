@@ -16,6 +16,10 @@ pub fn monster_data_path() -> PathBuf {
     stats_path().join("monsters.yml")
 }
 
+pub fn action_data_path() -> PathBuf {
+    stats_path().join("actions.yml")
+}
+
 pub fn assets_path() -> PathBuf {
     PathBuf::from("./assets")
 }

@@ -1,7 +1,7 @@
 use crate::entities::battle_monster::BattleMonster;
 use crate::entities::stored_monster::StoredMonster;
 use crate::enums::monster_elemental_type::MonsterElementalType;
-use crate::enums::monster_flags::MonsterFlag;
+use crate::enums::monster_flag::MonsterFlag;
 use crate::enums::monster_physical_type::MonsterPhysicalType;
 use crate::traits::monster_data_access::MonsterDataAccess;
 
@@ -13,9 +13,9 @@ fn test_creation() {
     assert_eq!(test_monster.get_desperation(), 0);
     assert_eq!(test_monster.get_momentum(), 0);
     assert_eq!(test_monster.get_energy(), 5);
-
-    assert_eq!(test_monster.get_internal_name(), "test_monster");
+    
     assert_eq!(test_monster.get_id(), 0);
+    assert_eq!(test_monster.get_internal_name(), "test_monster");
     assert_eq!(test_monster.get_vitality(), 50);
     assert_eq!(test_monster.get_potential(), 60);
     assert_eq!(test_monster.get_control(), 10);

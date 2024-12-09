@@ -1,3 +1,4 @@
+use crate::entities::stored_action::StoredAction;
 use crate::entities::stored_monster::StoredMonster;
 use crate::enums::save_file_mode::SaveFileMode;
 use crate::states::game_state::GameState;
@@ -7,7 +8,14 @@ use std::path::PathBuf;
 fn test_saving_loading() {
     let game_state = GameState::default();
     let test_monster = StoredMonster::create(0).unwrap();
-    game_state.add_monster(test_monster);
+    let test_monster_storage_id = game_state.add_monster(test_monster);
+
+    let test_action = StoredAction::create(0).unwrap();
+    game_state.update_monster(test_monster_storage_id, |m| m.learn_action(test_action));
+
+    // Very awkward access, updating the stored action data on the stored monster data, not intended to be used like this.
+    // If there is ever a use-case for something like this, I will build something like update_action.
+    game_state.update_monster(test_monster_storage_id, |m| m.get_actions_mut().get_mut(0).map(|action| action.on_use()).unwrap());
 
     let test_path = PathBuf::from("./test_data");
     let bin_path = test_path.join("save.bin");

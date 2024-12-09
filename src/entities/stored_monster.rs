@@ -1,7 +1,8 @@
 use crate::entities::battle_monster::BattleMonster;
 use crate::entities::monster_data::MonsterData;
+use crate::entities::stored_action::StoredAction;
 use crate::enums::monster_elemental_type::MonsterElementalType;
-use crate::enums::monster_flags::MonsterFlag;
+use crate::enums::monster_flag::MonsterFlag;
 use crate::enums::monster_physical_type::MonsterPhysicalType;
 use crate::get_game_data;
 use crate::serialization::arc_ref;
@@ -14,6 +15,7 @@ use std::sync::Arc;
 pub struct StoredMonster {
     #[serde(with = "arc_ref")]
     data: Arc<MonsterData>,
+    actions: Vec<StoredAction>,
     storage_id: u64,
     current_hp: u16,
 }
@@ -39,6 +41,7 @@ impl StoredMonster {
     pub fn from_data(data: Arc<MonsterData>) -> Self {
         Self {
             current_hp: data.get_vitality(),
+            actions: Vec::new(),
             storage_id: 0,
             data,
         }
@@ -49,6 +52,7 @@ impl StoredMonster {
 
         Self {
             current_hp: battle_monster.get_current_hp(),
+            actions: stored_monster.actions,
             storage_id: stored_monster.storage_id,
             data: stored_monster.data,
         }
@@ -64,6 +68,18 @@ impl StoredMonster {
 
     pub fn get_current_hp(&self) -> u16 {
         self.current_hp
+    }
+
+    pub fn get_actions(&self) -> &Vec<StoredAction> {
+        &self.actions
+    }
+
+    pub fn get_actions_mut(&mut self) -> &mut Vec<StoredAction> {
+        &mut self.actions
+    }
+
+    pub fn learn_action(&mut self, action: StoredAction) {
+        self.actions.push(action);
     }
 }
 

@@ -2,7 +2,7 @@ use crate::calculations::stats::energy_from_potential_and_vigilance;
 use crate::entities::monster_data::MonsterData;
 use crate::entities::stored_monster::StoredMonster;
 use crate::enums::monster_elemental_type::MonsterElementalType;
-use crate::enums::monster_flags::MonsterFlag;
+use crate::enums::monster_flag::MonsterFlag;
 use crate::enums::monster_physical_type::MonsterPhysicalType;
 use crate::get_game_data;
 use crate::serialization::arc_ref;
@@ -96,6 +96,10 @@ impl BattleMonster {
 
     pub fn set_energy(&mut self, energy: u16) {
         self.energy = energy;
+    }
+
+    pub fn on_use_action(&mut self, action_index: usize) {
+        self.storage_data.get_actions_mut().get_mut(action_index).map(|action| action.on_use());
     }
 }
 

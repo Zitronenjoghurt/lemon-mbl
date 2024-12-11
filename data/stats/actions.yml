@@ -1,9 +1,18 @@
-test_action:
+test_attack:
   id: 0
   event_types:
     - Damage:
-        amount: 1337
+        amount: 10
         damage_types:
           - Piercing
+        target: TargetMonster
   potential_targets:
     - SpecificOpponent
+test_heal:
+  id: 1
+  event_types:
+    - Heal:
+        amount: 5
+        target: TargetMonster
+  potential_targets:
+    - OneSelf

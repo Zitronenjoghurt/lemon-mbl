@@ -1,10 +1,12 @@
 use crate::battle_logic::battle_event_type::BattleEventType;
 use crate::entities::action_data::ActionData;
 use crate::enums::action_target::ActionTarget;
+use crate::enums::team_side::TeamSide;
 use crate::get_game_data;
 use crate::serialization::arc_ref;
 use crate::traits::action_data_access::ActionDataAccess;
 use serde::{Deserialize, Serialize};
+use std::fmt::Debug;
 use std::sync::Arc;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -29,6 +31,35 @@ impl StoredAction {
 
     pub fn on_use(&mut self) {
         self.total_use_count += 1;
+    }
+
+    pub fn validate_target(&self, source_team: &TeamSide, target_team: &TeamSide, source_monster_index: usize, target_monster_index: usize) -> bool {
+        for potential_target in self.get_potential_targets() {
+            match potential_target {
+                ActionTarget::None => return true,
+                ActionTarget::OneSelf => {
+                    if (source_team == target_team && source_monster_index == target_monster_index) {
+                        return true;
+                    }
+                }
+                ActionTarget::SpecificAlly | ActionTarget::EveryAllyIncludingSelf => {
+                    if (source_team == target_team) {
+                        return true;
+                    }
+                }
+                ActionTarget::SpecificOpponent | ActionTarget::EveryOpponent => {
+                    if (source_team != target_team) {
+                        return true;
+                    }
+                }
+                ActionTarget::EveryAllyExceptSelf => {
+                    if (target_team != source_team && source_monster_index != target_monster_index) {
+                        return true;
+                    }
+                }
+            }
+        }
+        false
     }
 }
 

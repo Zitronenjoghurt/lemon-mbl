@@ -9,10 +9,10 @@ fn test_data_integrity() {
     let test_action = actions_data_library.get(0).unwrap();
 
     assert_eq!(test_action.get_id(), 0);
-    assert_eq!(test_action.get_internal_name(), "test_action");
+    assert_eq!(test_action.get_internal_name(), "test_attack");
     assert_eq!(test_action.get_event_types().len(), 1);
 
     let damage_event_type = &test_action.get_event_types()[0];
-    assert_eq!(damage_event_type.get_amount().unwrap(), 1337);
+    assert_eq!(damage_event_type.get_amount().unwrap(), 10);
     assert!(damage_event_type.has_damage_type(DamageType::Piercing));
 }

@@ -1,7 +1,9 @@
+use crate::battle_logic::battle_error::BattleError;
 use crate::calculations::stats::energy_from_potential_and_vigilance;
 use crate::entities::monster_data::MonsterData;
 use crate::entities::stored_action::StoredAction;
 use crate::entities::stored_monster::StoredMonster;
+use crate::enums::damage_type::DamageType;
 use crate::enums::monster_elemental_type::MonsterElementalType;
 use crate::enums::monster_flag::MonsterFlag;
 use crate::enums::monster_physical_type::MonsterPhysicalType;
@@ -101,6 +103,17 @@ impl BattleMonster {
 
     pub fn set_energy(&mut self, energy: u16) {
         self.energy = energy;
+    }
+
+    pub fn process_damage(&mut self, amount: u16, _damage_types: &[DamageType]) -> Result<(), BattleError> {
+        // ToDo: Implement damage type advantages/disadvantages
+        self.current_hp = self.current_hp.saturating_sub(amount);
+        Ok(())
+    }
+
+    pub fn process_heal(&mut self, amount: u16) -> Result<(), BattleError> {
+        self.current_hp = self.current_hp.saturating_add(amount);
+        Ok(())
     }
 }
 

@@ -4,6 +4,8 @@ pub enum BattleError {
     InvalidSourceMonsterIndex,
     #[error("Invalid target monster index")]
     InvalidTargetMonsterIndex,
+    #[error("Invalid monster index")]
+    InvalidMonsterIndex,
     #[error("Invalid action index")]
     InvalidActionIndex,
     #[error("Invalid action target")]

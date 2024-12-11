@@ -18,10 +18,10 @@ impl BattleEventType {
         vec!["Damage".to_string(), "Heal".to_string()]
     }
 
-    pub fn process(&self, state: &mut BattleState, source_team: TeamSide, source_index: usize, target_index: usize) -> Result<(), BattleError> {
+    pub fn process(&self, state: &mut BattleState, source_team: TeamSide, target_team: TeamSide, source_index: usize, target_index: usize) -> Result<(), BattleError> {
         match self {
-            BattleEventType::Damage(damage_event_type) => { damage_event_type.process(state, source_team, source_index, target_index) }
-            BattleEventType::Heal(heal_event_type) => { heal_event_type.process(state, source_team, source_index, target_index) }
+            BattleEventType::Damage(damage_event_type) => { damage_event_type.process(state, source_team, target_team, source_index, target_index) }
+            BattleEventType::Heal(heal_event_type) => { heal_event_type.process(state, source_team, target_team, source_index, target_index) }
         }
     }
 

@@ -25,7 +25,7 @@ patternProperties:
               properties:
                 Damage:
                   type: object
-                  required: [ amount, damage_types ]
+                  required: [ amount, damage_types, target ]
                   properties:
                     amount:
                       type: integer
@@ -36,17 +36,21 @@ patternProperties:
                       items:
                         $ref: '#/definitions/damageType'
                       uniqueItems: true
+                    target:
+                      $ref: '#/definitions/eventTarget'
             - type: object
               required: [ Heal ]
               properties:
                 Heal:
                   type: object
-                  required: [ amount ]
+                  required: [ amount, target ]
                   properties:
                     amount:
                       type: integer
                       minimum: 0
                       maximum: 65535
+                    target:
+                      $ref: '#/definitions/eventTarget'
       potential_targets:
         type: array
         items:
@@ -68,8 +72,16 @@ definitions:
     type: string
     enum:
       - None
+      - OneSelf
       - SpecificAlly
       - SpecificOpponent
       - EveryAllyExceptSelf
       - EveryAllyIncludingSelf
       - EveryOpponent
+  eventTarget:
+    type: string
+    enum:
+      - SourceMonster
+      - SourceTeam
+      - TargetMonster
+      - TargetTeam

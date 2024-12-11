@@ -4,9 +4,10 @@ use serde::{Deserialize, Serialize};
 #[repr(u8)]
 pub enum ActionTarget {
     None = 0,
-    SpecificAlly = 1,
-    SpecificOpponent = 2,
-    EveryAllyExceptSelf = 3,
-    EveryAllyIncludingSelf = 4,
-    EveryOpponent = 5,
+    OneSelf = 1,
+    SpecificAlly = 2,
+    SpecificOpponent = 3,
+    EveryAllyExceptSelf = 4,
+    EveryAllyIncludingSelf = 5,
+    EveryOpponent = 6,
 }

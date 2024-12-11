@@ -14,6 +14,7 @@ mod utils;
 mod serialization;
 mod data_structures;
 pub mod states;
+pub mod battle_logic;
 
 const STATIC_DATA: &[u8] = include_bytes!("../data/game_data.bin");
 static GAME_DATA: Lazy<Arc<GameData>> = Lazy::new(|| {

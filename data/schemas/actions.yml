@@ -5,17 +5,52 @@ patternProperties:
     type: object
     required:
       - id
-      - damage_types
+      - event_types
+      - potential_targets
     properties:
       id:
         type: integer
         minimum: 0
         maximum: 65535
         description: Unique identifier for the action
-      damage_types:
+      internal_name:
+        type: string
+        default: ""
+      event_types:
         type: array
         items:
-          $ref: '#/definitions/damageType'
+          oneOf:
+            - type: object
+              required: [ Damage ]
+              properties:
+                Damage:
+                  type: object
+                  required: [ amount, damage_types ]
+                  properties:
+                    amount:
+                      type: integer
+                      minimum: 0
+                      maximum: 65535
+                    damage_types:
+                      type: array
+                      items:
+                        $ref: '#/definitions/damageType'
+                      uniqueItems: true
+            - type: object
+              required: [ Heal ]
+              properties:
+                Heal:
+                  type: object
+                  required: [ amount ]
+                  properties:
+                    amount:
+                      type: integer
+                      minimum: 0
+                      maximum: 65535
+      potential_targets:
+        type: array
+        items:
+          $ref: '#/definitions/actionTarget'
         uniqueItems: true
 definitions:
   damageType:
@@ -29,3 +64,12 @@ definitions:
       - Thunder
       - Light
       - Dark
+  actionTarget:
+    type: string
+    enum:
+      - None
+      - SpecificAlly
+      - SpecificOpponent
+      - EveryAllyExceptSelf
+      - EveryAllyIncludingSelf
+      - EveryOpponent

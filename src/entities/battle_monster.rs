@@ -1,5 +1,6 @@
 use crate::calculations::stats::energy_from_potential_and_vigilance;
 use crate::entities::monster_data::MonsterData;
+use crate::entities::stored_action::StoredAction;
 use crate::entities::stored_monster::StoredMonster;
 use crate::enums::monster_elemental_type::MonsterElementalType;
 use crate::enums::monster_flag::MonsterFlag;
@@ -54,6 +55,10 @@ impl BattleMonster {
         }
     }
 
+    pub fn get_action(&self, index: usize) -> Option<&StoredAction> {
+        self.storage_data.get_action(index)
+    }
+
     pub fn get_data(&self) -> Arc<MonsterData> {
         self.data.clone()
     }
@@ -96,10 +101,6 @@ impl BattleMonster {
 
     pub fn set_energy(&mut self, energy: u16) {
         self.energy = energy;
-    }
-
-    pub fn on_use_action(&mut self, action_index: usize) {
-        self.storage_data.get_actions_mut().get_mut(action_index).map(|action| action.on_use());
     }
 }
 

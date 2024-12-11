@@ -1,5 +1,9 @@
 test_action:
   id: 0
-  damage_types:
-    - Bludgeoning
-    - Fire
+  event_types:
+    - Damage:
+        amount: 1337
+        damage_types:
+          - Piercing
+  potential_targets:
+    - SpecificOpponent

@@ -70,6 +70,10 @@ impl StoredMonster {
         self.current_hp
     }
 
+    pub fn get_action(&self, index: usize) -> Option<&StoredAction> {
+        self.actions.get(index)
+    }
+
     pub fn get_actions(&self) -> &Vec<StoredAction> {
         &self.actions
     }

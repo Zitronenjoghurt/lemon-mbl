@@ -37,7 +37,8 @@ where
 {
     pub fn from_yaml() -> Result<Self, Box<dyn std::error::Error>> {
         let yaml_file_path = T::data_file_path();
-        let contents = fs::read_to_string(yaml_file_path)?;
+        let contents_unprocessed = fs::read_to_string(yaml_file_path)?;
+        let contents = T::preprocess(contents_unprocessed);
         let yaml_entities: HashMap<String, T> = serde_yaml::from_str(&contents)?;
 
         let entities = yaml_entities

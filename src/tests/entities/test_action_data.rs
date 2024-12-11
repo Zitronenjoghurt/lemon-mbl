@@ -10,7 +10,9 @@ fn test_data_integrity() {
 
     assert_eq!(test_action.get_id(), 0);
     assert_eq!(test_action.get_internal_name(), "test_action");
-    assert_eq!(test_action.get_damage_types().len(), 2);
-    assert!(test_action.has_damage_type(DamageType::Bludgeoning));
-    assert!(test_action.has_damage_type(DamageType::Fire));
+    assert_eq!(test_action.get_event_types().len(), 1);
+
+    let damage_event_type = &test_action.get_event_types()[0];
+    assert_eq!(damage_event_type.get_amount().unwrap(), 1337);
+    assert!(damage_event_type.has_damage_type(DamageType::Piercing));
 }

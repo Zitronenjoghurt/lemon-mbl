@@ -13,7 +13,7 @@ use std::sync::Arc;
 pub struct StoredAction {
     #[serde(with = "arc_ref")]
     data: Arc<ActionData>,
-    total_use_count: u64,
+    total_use_count: u32,
 }
 
 impl StoredAction {
@@ -29,6 +29,10 @@ impl StoredAction {
         }
     }
 
+    pub fn get_total_use_count(&self) -> u32 {
+        self.total_use_count
+    }
+
     pub fn on_use(&mut self) {
         self.total_use_count += 1;
     }
@@ -38,22 +42,22 @@ impl StoredAction {
             match potential_target {
                 ActionTarget::None => return true,
                 ActionTarget::OneSelf => {
-                    if (source_team == target_team && source_monster_index == target_monster_index) {
+                    if source_team == target_team && source_monster_index == target_monster_index {
                         return true;
                     }
                 }
                 ActionTarget::SpecificAlly | ActionTarget::EveryAllyIncludingSelf => {
-                    if (source_team == target_team) {
+                    if source_team == target_team {
                         return true;
                     }
                 }
                 ActionTarget::SpecificOpponent | ActionTarget::EveryOpponent => {
-                    if (source_team != target_team) {
+                    if source_team != target_team {
                         return true;
                     }
                 }
                 ActionTarget::EveryAllyExceptSelf => {
-                    if (target_team != source_team && source_monster_index != target_monster_index) {
+                    if target_team == source_team && source_monster_index != target_monster_index {
                         return true;
                     }
                 }
@@ -70,6 +74,10 @@ impl ActionDataAccess for StoredAction {
 
     fn get_internal_name(&self) -> &str {
         self.data.get_internal_name()
+    }
+
+    fn get_priority(&self) -> u8 {
+        self.data.get_priority()
     }
 
     fn get_event_types(&self) -> &[BattleEventType] {

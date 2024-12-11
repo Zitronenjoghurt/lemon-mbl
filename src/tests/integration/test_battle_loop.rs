@@ -27,16 +27,17 @@ fn test_basic_damage_and_heal() {
     let mut battle = BattleState::new(Vec::from(team_a), Vec::from(team_b));
 
     battle.take_action(0, &TeamSide::TeamA, &TeamSide::TeamB, 0, 0).unwrap();
-    let monster_a = battle.get_monster(&TeamSide::TeamA, 0).unwrap();
-    let monster_b = battle.get_monster(&TeamSide::TeamB, 0).unwrap();
-
-    assert_eq!(monster_a.get_current_hp(), 50);
-    assert_eq!(monster_b.get_current_hp(), 40);
-
     battle.take_action(1, &TeamSide::TeamB, &TeamSide::TeamB, 0, 0).unwrap();
+    battle.process_event_queue().unwrap();
     let monster_a = battle.get_monster(&TeamSide::TeamA, 0).unwrap();
     let monster_b = battle.get_monster(&TeamSide::TeamB, 0).unwrap();
 
     assert_eq!(monster_a.get_current_hp(), 50);
+    assert_eq!(monster_a.get_action(0).unwrap().get_total_use_count(), 1);
+    assert_eq!(monster_a.get_action(1).unwrap().get_total_use_count(), 0);
     assert_eq!(monster_b.get_current_hp(), 45);
+    assert_eq!(monster_b.get_action(0).unwrap().get_total_use_count(), 0);
+    assert_eq!(monster_b.get_action(1).unwrap().get_total_use_count(), 1);
+
+    println!("{:?}", monster_a);
 }

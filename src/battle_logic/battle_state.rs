@@ -4,22 +4,27 @@ use crate::entities::battle_monster::BattleMonster;
 use crate::enums::event_target::EventTarget;
 use crate::enums::team_side::TeamSide;
 use serde::{Deserialize, Serialize};
+use std::collections::{BinaryHeap, HashSet};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BattleState {
     turn_counter: u16,
-    is_team_a_turn: bool,
     monsters_a: Vec<BattleMonster>,
     monsters_b: Vec<BattleMonster>,
+    team_a_moved: HashSet<usize>,
+    team_b_moved: HashSet<usize>,
+    event_queue: BinaryHeap<BattleEvent>,
 }
 
 impl BattleState {
     pub fn new(team_a_monsters: Vec<BattleMonster>, team_b_monsters: Vec<BattleMonster>) -> Self {
         Self {
             turn_counter: 0,
-            is_team_a_turn: true,
             monsters_a: team_a_monsters,
             monsters_b: team_b_monsters,
+            team_a_moved: HashSet::new(),
+            team_b_moved: HashSet::new(),
+            event_queue: BinaryHeap::new(),
         }
     }
 
@@ -30,6 +35,42 @@ impl BattleState {
         }
     }
 
+    pub fn queue_event(&mut self, event: BattleEvent) {
+        self.event_queue.push(event);
+    }
+
+    pub fn process_event_queue(&mut self) -> Result<(), BattleError> {
+        while let Some(event) = self.event_queue.pop() {
+            event.process(self)?
+        };
+        self.team_a_moved.clear();
+        self.team_b_moved.clear();
+        Ok(())
+    }
+
+    fn check_if_already_moved(&self, team: &TeamSide, monster_index: usize) -> Result<(), BattleError> {
+        match team {
+            TeamSide::TeamA => {
+                if self.team_a_moved.contains(&monster_index) {
+                    return Err(BattleError::AlreadyMoved);
+                }
+            }
+            TeamSide::TeamB => {
+                if self.team_b_moved.contains(&monster_index) {
+                    return Err(BattleError::AlreadyMoved);
+                }
+            }
+        }
+        Ok(())
+    }
+
+    fn add_monster_to_moved(&mut self, team: &TeamSide, monster_index: usize) {
+        match team {
+            TeamSide::TeamA => self.team_a_moved.insert(monster_index),
+            TeamSide::TeamB => self.team_b_moved.insert(monster_index)
+        };
+    }
+
     pub fn take_action(
         &mut self,
         action_index: usize,
@@ -38,6 +79,8 @@ impl BattleState {
         source_monster_index: usize,
         target_monster_index: usize,
     ) -> Result<(), BattleError> {
+        self.check_if_already_moved(source_team, source_monster_index)?;
+
         let event = Self::prepare_action(
             self,
             action_index,
@@ -46,7 +89,9 @@ impl BattleState {
             source_monster_index,
             target_monster_index,
         )?;
-        event.process(self)
+        self.queue_event(event);
+        self.add_monster_to_moved(source_team, source_monster_index);
+        Ok(())
     }
 
     pub fn prepare_action(

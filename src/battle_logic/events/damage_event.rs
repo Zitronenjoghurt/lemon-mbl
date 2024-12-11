@@ -5,7 +5,7 @@ use crate::enums::event_target::EventTarget;
 use crate::enums::team_side::TeamSide;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 pub struct DamageEventType {
     pub amount: u16,
     pub damage_types: Vec<DamageType>,

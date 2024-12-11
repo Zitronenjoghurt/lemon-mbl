@@ -7,6 +7,7 @@ patternProperties:
       - id
       - event_types
       - potential_targets
+      - priority
     properties:
       id:
         type: integer
@@ -16,6 +17,11 @@ patternProperties:
       internal_name:
         type: string
         default: ""
+      priority:
+        type: integer
+        minimum: 0
+        maximum: 255
+        description: Higher priority means the events connected to this action will take effect over others
       event_types:
         type: array
         items:

@@ -12,4 +12,6 @@ pub enum BattleError {
     InvalidActionTarget,
     #[error("Insufficient energy")]
     InsufficientEnergy,
+    #[error("Already moved")]
+    AlreadyMoved,
 }

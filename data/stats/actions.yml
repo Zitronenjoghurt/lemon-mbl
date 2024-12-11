@@ -8,6 +8,7 @@ test_attack:
         target: TargetMonster
   potential_targets:
     - SpecificOpponent
+  priority: 0
 test_heal:
   id: 1
   event_types:
@@ -16,3 +17,4 @@ test_heal:
         target: TargetMonster
   potential_targets:
     - OneSelf
+  priority: 0

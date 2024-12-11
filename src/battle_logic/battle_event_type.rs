@@ -6,7 +6,7 @@ use crate::enums::damage_type::DamageType;
 use crate::enums::team_side::TeamSide;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(u8)]
 pub enum BattleEventType {
     Damage(DamageEventType) = 0,

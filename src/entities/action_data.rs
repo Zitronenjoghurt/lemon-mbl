@@ -19,6 +19,7 @@ pub struct ActionData {
     internal_name: String,
     event_types: Vec<BattleEventType>,
     potential_targets: Vec<ActionTarget>,
+    priority: u8,
 }
 
 impl ArcRefFromKey for ActionData {
@@ -86,6 +87,10 @@ impl ActionDataAccess for ActionData {
 
     fn get_internal_name(&self) -> &str {
         &self.internal_name
+    }
+
+    fn get_priority(&self) -> u8 {
+        self.priority
     }
 
     fn get_event_types(&self) -> &[BattleEventType] {

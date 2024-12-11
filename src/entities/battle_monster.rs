@@ -61,6 +61,10 @@ impl BattleMonster {
         self.storage_data.get_action(index)
     }
 
+    pub fn get_action_mut(&mut self, index: usize) -> Option<&mut StoredAction> {
+        self.storage_data.get_action_mut(index)
+    }
+
     pub fn get_data(&self) -> Arc<MonsterData> {
         self.data.clone()
     }
@@ -114,6 +118,12 @@ impl BattleMonster {
     pub fn process_heal(&mut self, amount: u16) -> Result<(), BattleError> {
         self.current_hp = self.current_hp.saturating_add(amount);
         Ok(())
+    }
+
+    pub fn on_action_used(&mut self, action_index: usize) -> Result<(), BattleError> {
+        self.get_action_mut(action_index)
+            .ok_or(BattleError::InvalidActionIndex)
+            .map(|action| action.on_use())
     }
 }
 

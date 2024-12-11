@@ -74,6 +74,10 @@ impl StoredMonster {
         self.actions.get(index)
     }
 
+    pub fn get_action_mut(&mut self, index: usize) -> Option<&mut StoredAction> {
+        self.actions.get_mut(index)
+    }
+
     pub fn get_actions(&self) -> &Vec<StoredAction> {
         &self.actions
     }

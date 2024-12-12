@@ -1,5 +1,6 @@
 use crate::battle_logic::battle_error::BattleError;
 use crate::battle_logic::battle_event::BattleEvent;
+use crate::battle_logic::battle_log::{BattleLog, BattleLogActionEntry};
 use crate::entities::battle_monster::BattleMonster;
 use crate::enums::event_target::EventTarget;
 use crate::enums::team_side::TeamSide;
@@ -13,18 +14,38 @@ pub struct BattleState {
     monsters_b: Vec<BattleMonster>,
     team_a_moved: HashSet<usize>,
     team_b_moved: HashSet<usize>,
+    current_turn_action_log: Vec<BattleLogActionEntry>,
     event_queue: BinaryHeap<BattleEvent>,
+    battle_log: BattleLog,
+}
+
+// PartialEq implementation which ignores the BinaryHeap event queue
+impl PartialEq for BattleState {
+    fn eq(&self, other: &Self) -> bool {
+        self.turn_counter == other.turn_counter &&
+            self.monsters_a == other.monsters_a &&
+            self.monsters_b == other.monsters_b &&
+            self.team_a_moved == other.team_a_moved &&
+            self.team_b_moved == other.team_b_moved &&
+            self.current_turn_action_log == other.current_turn_action_log &&
+            self.battle_log == other.battle_log
+    }
 }
 
 impl BattleState {
     pub fn new(team_a_monsters: Vec<BattleMonster>, team_b_monsters: Vec<BattleMonster>) -> Self {
         Self {
-            turn_counter: 0,
-            monsters_a: team_a_monsters,
-            monsters_b: team_b_monsters,
+            turn_counter: 1,
+            monsters_a: team_a_monsters.clone(),
+            monsters_b: team_b_monsters.clone(),
             team_a_moved: HashSet::new(),
             team_b_moved: HashSet::new(),
+            current_turn_action_log: Vec::new(),
             event_queue: BinaryHeap::new(),
+            battle_log: BattleLog::from_initial_data(
+                team_a_monsters,
+                team_b_monsters,
+            ),
         }
     }
 
@@ -35,6 +56,17 @@ impl BattleState {
         }
     }
 
+    pub fn get_monsters(&self, team_side: &TeamSide) -> &Vec<BattleMonster> {
+        match team_side {
+            TeamSide::TeamA => &self.monsters_a,
+            TeamSide::TeamB => &self.monsters_b
+        }
+    }
+
+    pub fn get_current_turn(&self) -> u16 {
+        self.turn_counter
+    }
+
     pub fn queue_event(&mut self, event: BattleEvent) {
         self.event_queue.push(event);
     }
@@ -43,8 +75,18 @@ impl BattleState {
         while let Some(event) = self.event_queue.pop() {
             event.process(self)?
         };
+
+        self.battle_log.add_entry(
+            self.get_current_turn(),
+            self.current_turn_action_log.clone(),
+            self.monsters_b.clone(),
+            self.monsters_a.clone(),
+        );
+
         self.team_a_moved.clear();
         self.team_b_moved.clear();
+        self.current_turn_action_log.clear();
+        self.turn_counter += 1;
         Ok(())
     }
 
@@ -89,6 +131,9 @@ impl BattleState {
             source_monster_index,
             target_monster_index,
         )?;
+
+        if let Some(entry) = event.get_log_action_entry() { self.current_turn_action_log.push(entry); }
+
         self.queue_event(event);
         self.add_monster_to_moved(source_team, source_monster_index);
         Ok(())

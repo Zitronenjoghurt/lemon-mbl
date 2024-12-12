@@ -1,5 +1,6 @@
 use crate::battle_logic::battle_error::BattleError;
 use crate::battle_logic::battle_event_type::BattleEventType;
+use crate::battle_logic::battle_log::BattleLogActionEntry;
 use crate::battle_logic::battle_state::BattleState;
 use crate::entities::stored_action::StoredAction;
 use crate::enums::team_side::TeamSide;
@@ -38,6 +39,16 @@ impl BattleEvent {
             priority: action.get_priority(),
             secondary_priority: action.get_id(),
         }
+    }
+
+    pub fn get_log_action_entry(&self) -> Option<BattleLogActionEntry> {
+        self.action_index.map(|action_index| BattleLogActionEntry {
+            action_index,
+            source_team: self.source_team,
+            target_team: self.target_team,
+            source_monster_index: self.source_monster_index,
+            target_monster_index: self.target_monster_index,
+        })
     }
 
     pub fn process(&self, state: &mut BattleState) -> Result<(), BattleError> {

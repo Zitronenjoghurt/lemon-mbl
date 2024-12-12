@@ -2,7 +2,10 @@ use crate::battle_logic::battle_state::BattleState;
 use crate::entities::battle_monster::BattleMonster;
 use crate::entities::stored_action::StoredAction;
 use crate::entities::stored_monster::StoredMonster;
+use crate::enums::save_file_mode::SaveFileMode;
 use crate::enums::team_side::TeamSide;
+use crate::states::game_state::GameState;
+use std::path::PathBuf;
 
 #[test]
 fn test_basic_damage_and_heal() {
@@ -39,5 +42,19 @@ fn test_basic_damage_and_heal() {
     assert_eq!(monster_b.get_action(0).unwrap().get_total_use_count(), 0);
     assert_eq!(monster_b.get_action(1).unwrap().get_total_use_count(), 1);
 
-    println!("{:?}", monster_a);
+    let mut game_state = GameState::default();
+    let test_path = PathBuf::from("./test_data");
+    let bin_path = test_path.join("save_with_battle.bin");
+    let yaml_path = test_path.join("save_with_battle.yaml");
+    let yaml_path2 = test_path.join("save_with_battle_2.yaml");
+    let json_path = test_path.join("save_with_battle.json");
+    game_state.set_current_battle(Some(battle));
+    game_state.save(&bin_path, SaveFileMode::Bin).unwrap();
+    game_state.save(&yaml_path, SaveFileMode::Yaml).unwrap();
+    game_state.save(&json_path, SaveFileMode::Json).unwrap();
+
+    let loaded_bin = GameState::load(&bin_path).unwrap();
+    loaded_bin.save(&yaml_path2, SaveFileMode::Yaml).unwrap();
+
+    assert_eq!(game_state, loaded_bin);
 }

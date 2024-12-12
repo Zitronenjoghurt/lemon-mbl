@@ -1,3 +1,4 @@
+use crate::battle_logic::battle_state::BattleState;
 use crate::data_structures::entity_collection::EntityCollection;
 use crate::entities::stored_monster::StoredMonster;
 use crate::enums::save_file_mode::SaveFileMode;
@@ -12,12 +13,14 @@ use std::path::Path;
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct GameState {
     stored_monsters: EntityCollection<StoredMonster>,
+    current_battle: Option<BattleState>,
 }
 
 impl Default for GameState {
     fn default() -> Self {
         Self {
             stored_monsters: EntityCollection::new(),
+            current_battle: None,
         }
     }
 }
@@ -40,6 +43,10 @@ impl GameState {
 
     pub fn remove_monster(&self, id: u64) -> Option<StoredMonster> {
         self.stored_monsters.remove(id)
+    }
+
+    pub fn set_current_battle(&mut self, battle: Option<BattleState>) {
+        self.current_battle = battle;
     }
 
     pub fn save(&self, path: &Path, file_mode: SaveFileMode) -> Result<(), Box<dyn std::error::Error>> {

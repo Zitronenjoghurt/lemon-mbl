@@ -17,7 +17,11 @@ pub struct StoredMonster {
     data: Arc<MonsterData>,
     actions: Vec<StoredAction>,
     storage_id: u64,
-    current_hp: u16,
+    current_hp: u32,
+    total_damage_taken: u32,
+    total_damage_dealt: u32,
+    total_hp_heal_given: u32,
+    total_hp_heal_received: u32,
 }
 
 impl HasAssignableId for StoredMonster {
@@ -43,6 +47,10 @@ impl StoredMonster {
             current_hp: data.get_vitality(),
             actions: Vec::new(),
             storage_id: 0,
+            total_damage_dealt: 0,
+            total_damage_taken: 0,
+            total_hp_heal_given: 0,
+            total_hp_heal_received: 0,
             data,
         }
     }
@@ -54,6 +62,10 @@ impl StoredMonster {
             current_hp: battle_monster.get_current_hp(),
             actions: stored_monster.actions,
             storage_id: stored_monster.storage_id,
+            total_damage_dealt: stored_monster.total_damage_dealt,
+            total_damage_taken: stored_monster.total_damage_taken,
+            total_hp_heal_given: stored_monster.total_hp_heal_given,
+            total_hp_heal_received: stored_monster.total_hp_heal_received,
             data: stored_monster.data,
         }
     }
@@ -66,7 +78,7 @@ impl StoredMonster {
         self.data.clone()
     }
 
-    pub fn get_current_hp(&self) -> u16 {
+    pub fn get_current_hp(&self) -> u32 {
         self.current_hp
     }
 
@@ -89,6 +101,38 @@ impl StoredMonster {
     pub fn learn_action(&mut self, action: StoredAction) {
         self.actions.push(action);
     }
+
+    pub fn get_total_damage_dealt(&self) -> u32 {
+        self.total_damage_dealt
+    }
+
+    pub fn get_total_damage_taken(&self) -> u32 {
+        self.total_damage_taken
+    }
+
+    pub fn get_total_hp_heal_given(&self) -> u32 {
+        self.total_hp_heal_given
+    }
+
+    pub fn get_total_hp_heal_received(&self) -> u32 {
+        self.total_hp_heal_received
+    }
+
+    pub fn on_damage_dealt(&mut self, damage: u32) {
+        self.total_damage_dealt = self.total_damage_dealt.saturating_add(damage);
+    }
+
+    pub fn on_damage_taken(&mut self, damage: u32) {
+        self.total_damage_taken = self.total_damage_taken.saturating_add(damage);
+    }
+
+    pub fn on_hp_heal_given(&mut self, hp_healed: u32) {
+        self.total_hp_heal_given = self.total_hp_heal_given.saturating_add(hp_healed);
+    }
+
+    pub fn on_hp_heal_received(&mut self, hp_healed: u32) {
+        self.total_hp_heal_received = self.total_hp_heal_received.saturating_add(hp_healed);
+    }
 }
 
 impl MonsterDataAccess for StoredMonster {
@@ -101,43 +145,43 @@ impl MonsterDataAccess for StoredMonster {
     }
 
 
-    fn get_vitality(&self) -> u16 {
+    fn get_vitality(&self) -> u32 {
         self.data.get_vitality()
     }
 
-    fn get_potential(&self) -> u16 {
+    fn get_potential(&self) -> u32 {
         self.data.get_potential()
     }
 
-    fn get_control(&self) -> u16 {
+    fn get_control(&self) -> u32 {
         self.data.get_control()
     }
 
-    fn get_strength(&self) -> u16 {
+    fn get_strength(&self) -> u32 {
         self.data.get_strength()
     }
 
-    fn get_resilience(&self) -> u16 {
+    fn get_resilience(&self) -> u32 {
         self.data.get_resilience()
     }
 
-    fn get_speed(&self) -> u16 {
+    fn get_speed(&self) -> u32 {
         self.data.get_speed()
     }
 
-    fn get_technique(&self) -> u16 {
+    fn get_technique(&self) -> u32 {
         self.data.get_technique()
     }
 
-    fn get_agility(&self) -> u16 {
+    fn get_agility(&self) -> u32 {
         self.data.get_agility()
     }
 
-    fn get_vigilance(&self) -> u16 {
+    fn get_vigilance(&self) -> u32 {
         self.data.get_vigilance()
     }
 
-    fn get_focus(&self) -> u16 {
+    fn get_focus(&self) -> u32 {
         self.data.get_focus()
     }
 

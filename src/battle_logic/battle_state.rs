@@ -6,6 +6,7 @@ use crate::enums::event_target::EventTarget;
 use crate::enums::team_side::TeamSide;
 use serde::{Deserialize, Serialize};
 use std::collections::{BinaryHeap, HashSet};
+use std::ops::Add;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BattleState {
@@ -165,9 +166,9 @@ impl BattleState {
         ))
     }
 
-    pub fn update_specific_monster<F>(&mut self, target_team: TeamSide, index: usize, update_fn: &F) -> Result<(), BattleError>
+    pub fn update_specific_monster<F, R>(&mut self, target_team: TeamSide, index: usize, update_fn: &F) -> Result<R, BattleError>
     where
-        F: Fn(&mut BattleMonster) -> Result<(), BattleError>,
+        F: Fn(&mut BattleMonster) -> Result<R, BattleError>,
     {
         match target_team {
             TeamSide::TeamA => {
@@ -187,9 +188,10 @@ impl BattleState {
         }
     }
 
-    pub fn update_monsters_of_a_team<F>(&mut self, target_team: TeamSide, update_fn: F) -> Result<(), BattleError>
+    pub fn update_monsters_of_a_team<F, R>(&mut self, target_team: TeamSide, update_fn: F) -> Result<R, BattleError>
     where
-        F: Fn(&mut BattleMonster) -> Result<(), BattleError>,
+        F: Fn(&mut BattleMonster) -> Result<R, BattleError>,
+        R: Default,
     {
         match target_team {
             TeamSide::TeamA => {
@@ -203,12 +205,34 @@ impl BattleState {
                 }
             }
         }
-        Ok(())
+        Ok(R::default())
     }
 
-    pub fn update_monsters_by_event_target<F>(&mut self, source_team: TeamSide, target_team: TeamSide, source_monster_index: usize, target_monster_index: usize, event_target: EventTarget, update_fn: F) -> Result<(), BattleError>
+    pub fn update_monsters_of_a_team_with_accumulator<F, R>(&mut self, target_team: TeamSide, update_fn: F) -> Result<R, BattleError>
     where
-        F: Fn(&mut BattleMonster) -> Result<(), BattleError>,
+        F: Fn(&mut BattleMonster) -> Result<R, BattleError>,
+        R: Default + Add<Output=R>,
+    {
+        let mut result = R::default();
+        match target_team {
+            TeamSide::TeamA => {
+                for i in 0..self.monsters_a.len() {
+                    result = result + self.update_specific_monster(target_team, i, &update_fn)?;
+                }
+            }
+            TeamSide::TeamB => {
+                for i in 0..self.monsters_b.len() {
+                    result = result + self.update_specific_monster(target_team, i, &update_fn)?;
+                }
+            }
+        }
+        Ok(result)
+    }
+
+    pub fn update_monsters_by_event_target<F, R>(&mut self, source_team: TeamSide, target_team: TeamSide, source_monster_index: usize, target_monster_index: usize, event_target: EventTarget, update_fn: F) -> Result<R, BattleError>
+    where
+        F: Fn(&mut BattleMonster) -> Result<R, BattleError>,
+        R: Default,
     {
         match event_target {
             EventTarget::SourceMonster => {
@@ -233,6 +257,41 @@ impl BattleState {
             }
             EventTarget::TargetTeam => {
                 self.update_monsters_of_a_team(
+                    target_team,
+                    update_fn,
+                )
+            }
+        }
+    }
+
+    pub fn update_monsters_by_event_target_with_accumulator<F, R>(&mut self, source_team: TeamSide, target_team: TeamSide, source_monster_index: usize, target_monster_index: usize, event_target: EventTarget, update_fn: F) -> Result<R, BattleError>
+    where
+        F: Fn(&mut BattleMonster) -> Result<R, BattleError>,
+        R: Default + Add<Output=R>,
+    {
+        match event_target {
+            EventTarget::SourceMonster => {
+                self.update_specific_monster(
+                    source_team,
+                    source_monster_index,
+                    &update_fn,
+                )
+            }
+            EventTarget::TargetMonster => {
+                self.update_specific_monster(
+                    target_team,
+                    target_monster_index,
+                    &update_fn,
+                )
+            }
+            EventTarget::SourceTeam => {
+                self.update_monsters_of_a_team_with_accumulator(
+                    source_team,
+                    update_fn,
+                )
+            }
+            EventTarget::TargetTeam => {
+                self.update_monsters_of_a_team_with_accumulator(
                     target_team,
                     update_fn,
                 )

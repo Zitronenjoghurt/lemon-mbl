@@ -7,21 +7,30 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 pub struct DamageEventType {
-    pub amount: u16,
+    pub amount: u32,
     pub damage_types: Vec<DamageType>,
     pub target: EventTarget,
 }
 
 impl DamageEventType {
     pub fn process(&self, state: &mut BattleState, source_team: TeamSide, target_team: TeamSide, source_index: usize, target_index: usize) -> Result<(), BattleError> {
-        state.update_monsters_by_event_target(
+        let damage_dealt_cumulative = state.update_monsters_by_event_target_with_accumulator(
             source_team,
             target_team,
             source_index,
             target_index,
             self.target,
             |m| {
-                m.process_damage(self.amount, &self.damage_types)
+                Ok(m.process_damage(self.amount, &self.damage_types))
+            },
+        )?;
+
+        state.update_specific_monster(
+            source_team,
+            source_index,
+            &|m| {
+                m.on_damage_dealt(damage_dealt_cumulative);
+                Ok(())
             },
         )
     }

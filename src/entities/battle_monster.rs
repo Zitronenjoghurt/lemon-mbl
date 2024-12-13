@@ -18,10 +18,14 @@ pub struct BattleMonster {
     #[serde(with = "arc_ref")]
     data: Arc<MonsterData>,
     storage_data: StoredMonster,
-    current_hp: u16,
-    desperation: u16,
-    energy: u16,
-    momentum: u16,
+    current_hp: u32,
+    desperation: u32,
+    energy: u32,
+    momentum: u32,
+    damage_dealt: u32,
+    damage_taken: u32,
+    hp_heal_given: u32,
+    hp_heal_received: u32,
 }
 
 impl BattleMonster {
@@ -38,6 +42,10 @@ impl BattleMonster {
             storage_data: StoredMonster::from_data(data.clone()),
             desperation: 0,
             momentum: 0,
+            damage_dealt: 0,
+            damage_taken: 0,
+            hp_heal_given: 0,
+            hp_heal_received: 0,
             energy,
             data,
         }
@@ -52,6 +60,10 @@ impl BattleMonster {
             storage_data: stored_monster,
             desperation: 0,
             momentum: 0,
+            damage_dealt: 0,
+            damage_taken: 0,
+            hp_heal_given: 0,
+            hp_heal_received: 0,
             energy,
             data,
         }
@@ -73,57 +85,101 @@ impl BattleMonster {
         self.storage_data.clone()
     }
 
-    pub fn get_current_hp(&self) -> u16 {
+    pub fn get_current_hp(&self) -> u32 {
         self.current_hp
     }
 
-    pub fn set_current_hp(&mut self, hp: u16) {
+    pub fn set_current_hp(&mut self, hp: u32) {
         self.current_hp = hp;
     }
 
-    pub fn get_max_hp(&self) -> u16 {
+    pub fn get_max_hp(&self) -> u32 {
         self.data.get_vitality()
     }
 
-    pub fn get_desperation(&self) -> u16 {
+    pub fn get_desperation(&self) -> u32 {
         self.desperation
     }
 
-    pub fn set_desperation(&mut self, desperation: u16) {
+    pub fn set_desperation(&mut self, desperation: u32) {
         self.desperation = desperation;
     }
 
-    pub fn get_momentum(&self) -> u16 {
+    pub fn get_momentum(&self) -> u32 {
         self.momentum
     }
 
-    pub fn set_momentum(&mut self, momentum: u16) {
+    pub fn set_momentum(&mut self, momentum: u32) {
         self.momentum = momentum;
     }
 
-    pub fn get_energy(&self) -> u16 {
+    pub fn get_energy(&self) -> u32 {
         self.energy
     }
 
-    pub fn set_energy(&mut self, energy: u16) {
+    pub fn set_energy(&mut self, energy: u32) {
         self.energy = energy;
     }
 
-    pub fn process_damage(&mut self, amount: u16, _damage_types: &[DamageType]) -> Result<(), BattleError> {
-        // ToDo: Implement damage type advantages/disadvantages
-        self.current_hp = self.current_hp.saturating_sub(amount);
-        Ok(())
+    pub fn get_damage_dealt(&self) -> u32 {
+        self.damage_dealt
     }
 
-    pub fn process_heal(&mut self, amount: u16) -> Result<(), BattleError> {
+    pub fn get_damage_taken(&self) -> u32 {
+        self.damage_taken
+    }
+
+    pub fn get_hp_heal_given(&self) -> u32 {
+        self.hp_heal_given
+    }
+
+    pub fn get_hp_heal_received(&self) -> u32 {
+        self.hp_heal_received
+    }
+
+    pub fn process_damage(&mut self, amount: u32, _damage_types: &[DamageType]) -> u32 {
+        // ToDo: Implement damage type advantages/disadvantages
+        let initial_hp = self.current_hp;
+        self.current_hp = self.current_hp.saturating_sub(amount);
+
+        let damage_taken = initial_hp - self.current_hp;
+        self.on_damage_taken(damage_taken);
+        damage_taken
+    }
+
+    pub fn process_heal(&mut self, amount: u32) -> u32 {
+        let initial_hp = self.current_hp;
         self.current_hp = self.current_hp.saturating_add(amount);
-        Ok(())
+
+        let hp_healed = self.current_hp - initial_hp;
+        self.on_hp_heal_received(hp_healed);
+        hp_healed
     }
 
     pub fn on_action_used(&mut self, action_index: usize) -> Result<(), BattleError> {
         self.get_action_mut(action_index)
             .ok_or(BattleError::InvalidActionIndex)
             .map(|action| action.on_use())
+    }
+
+    pub fn on_damage_dealt(&mut self, amount: u32) {
+        self.storage_data.on_damage_dealt(amount);
+        self.damage_dealt = self.damage_dealt.saturating_add(amount);
+    }
+
+    pub fn on_damage_taken(&mut self, amount: u32) {
+        self.storage_data.on_damage_taken(amount);
+        self.damage_taken = self.damage_taken.saturating_add(amount);
+    }
+
+    pub fn on_hp_heal_given(&mut self, amount: u32) {
+        self.storage_data.on_hp_heal_given(amount);
+        self.hp_heal_given = self.hp_heal_given.saturating_add(amount);
+    }
+
+    pub fn on_hp_heal_received(&mut self, amount: u32) {
+        self.storage_data.on_hp_heal_received(amount);
+        self.hp_heal_received = self.hp_heal_received.saturating_add(amount);
     }
 }
 
@@ -137,43 +193,43 @@ impl MonsterDataAccess for BattleMonster {
     }
 
 
-    fn get_vitality(&self) -> u16 {
+    fn get_vitality(&self) -> u32 {
         self.data.get_vitality()
     }
 
-    fn get_potential(&self) -> u16 {
+    fn get_potential(&self) -> u32 {
         self.data.get_potential()
     }
 
-    fn get_control(&self) -> u16 {
+    fn get_control(&self) -> u32 {
         self.data.get_control()
     }
 
-    fn get_strength(&self) -> u16 {
+    fn get_strength(&self) -> u32 {
         self.data.get_strength()
     }
 
-    fn get_resilience(&self) -> u16 {
+    fn get_resilience(&self) -> u32 {
         self.data.get_resilience()
     }
 
-    fn get_speed(&self) -> u16 {
+    fn get_speed(&self) -> u32 {
         self.data.get_speed()
     }
 
-    fn get_technique(&self) -> u16 {
+    fn get_technique(&self) -> u32 {
         self.data.get_technique()
     }
 
-    fn get_agility(&self) -> u16 {
+    fn get_agility(&self) -> u32 {
         self.data.get_agility()
     }
 
-    fn get_vigilance(&self) -> u16 {
+    fn get_vigilance(&self) -> u32 {
         self.data.get_vigilance()
     }
 
-    fn get_focus(&self) -> u16 {
+    fn get_focus(&self) -> u32 {
         self.data.get_focus()
     }
 

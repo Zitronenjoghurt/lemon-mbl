@@ -25,7 +25,7 @@ impl BattleEventType {
         }
     }
 
-    pub fn get_amount(&self) -> Option<u16> {
+    pub fn get_amount(&self) -> Option<u32> {
         match self {
             BattleEventType::Damage(event) => Some(event.amount),
             BattleEventType::Heal(event) => Some(event.amount),

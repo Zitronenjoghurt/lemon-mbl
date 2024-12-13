@@ -17,16 +17,16 @@ pub struct MonsterData {
     id: u16,
     #[serde(default)]
     internal_name: String,
-    vitality: u16,
-    potential: u16,
-    control: u16,
-    strength: u16,
-    resilience: u16,
-    speed: u16,
-    technique: u16,
-    agility: u16,
-    vigilance: u16,
-    focus: u16,
+    vitality: u32,
+    potential: u32,
+    control: u32,
+    strength: u32,
+    resilience: u32,
+    speed: u32,
+    technique: u32,
+    agility: u32,
+    vigilance: u32,
+    focus: u32,
     flags: Vec<MonsterFlag>,
     physical_types: Vec<MonsterPhysicalType>,
     elemental_types: Vec<MonsterElementalType>,
@@ -83,43 +83,43 @@ impl MonsterDataAccess for MonsterData {
         &self.internal_name
     }
 
-    fn get_vitality(&self) -> u16 {
+    fn get_vitality(&self) -> u32 {
         self.vitality
     }
 
-    fn get_potential(&self) -> u16 {
+    fn get_potential(&self) -> u32 {
         self.potential
     }
 
-    fn get_control(&self) -> u16 {
+    fn get_control(&self) -> u32 {
         self.control
     }
 
-    fn get_strength(&self) -> u16 {
+    fn get_strength(&self) -> u32 {
         self.strength
     }
 
-    fn get_resilience(&self) -> u16 {
+    fn get_resilience(&self) -> u32 {
         self.resilience
     }
 
-    fn get_speed(&self) -> u16 {
+    fn get_speed(&self) -> u32 {
         self.speed
     }
 
-    fn get_technique(&self) -> u16 {
+    fn get_technique(&self) -> u32 {
         self.technique
     }
 
-    fn get_agility(&self) -> u16 {
+    fn get_agility(&self) -> u32 {
         self.agility
     }
 
-    fn get_vigilance(&self) -> u16 {
+    fn get_vigilance(&self) -> u32 {
         self.vigilance
     }
 
-    fn get_focus(&self) -> u16 {
+    fn get_focus(&self) -> u32 {
         self.focus
     }
 

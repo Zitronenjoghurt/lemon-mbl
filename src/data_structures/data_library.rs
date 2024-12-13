@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::sync::Arc;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, PartialEq)]
 pub struct DataLibrary<T>
 where
     T: Clone + HasId + Serialize + for<'de> Deserialize<'de>,

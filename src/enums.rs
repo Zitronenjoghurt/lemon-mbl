@@ -6,3 +6,4 @@ pub mod damage_type;
 pub mod team_side;
 pub mod action_target;
 pub mod event_target;
+pub mod type_resonance;

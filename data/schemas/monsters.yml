@@ -15,6 +15,7 @@ patternProperties:
       - agility
       - vigilance
       - focus
+    additionalProperties: false
     properties:
       id:
         type: integer
@@ -76,7 +77,6 @@ patternProperties:
         items:
           $ref: '#/definitions/elementalType'
         uniqueItems: true
-    additionalProperties: false
 definitions:
   flag:
     type: string

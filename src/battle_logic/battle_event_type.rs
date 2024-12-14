@@ -1,4 +1,5 @@
 use crate::battle_logic::battle_error::BattleError;
+use crate::battle_logic::battle_event_feedback::BattleEventFeedbackEntry;
 use crate::battle_logic::battle_state::BattleState;
 use crate::battle_logic::events::damage_event::DamageEventType;
 use crate::battle_logic::events::heal_event::HealEventType;
@@ -18,7 +19,14 @@ impl BattleEventType {
         vec!["Damage".to_string(), "Heal".to_string()]
     }
 
-    pub fn process(&self, state: &mut BattleState, source_team: TeamSide, target_team: TeamSide, source_index: usize, target_index: usize) -> Result<(), BattleError> {
+    pub fn process(
+        &self,
+        state: &mut BattleState,
+        source_team: TeamSide,
+        target_team: TeamSide,
+        source_index: usize,
+        target_index: usize,
+    ) -> Result<Vec<BattleEventFeedbackEntry>, BattleError> {
         match self {
             BattleEventType::Damage(damage_event_type) => { damage_event_type.process(state, source_team, target_team, source_index, target_index) }
             BattleEventType::Heal(heal_event_type) => { heal_event_type.process(state, source_team, target_team, source_index, target_index) }

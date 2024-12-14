@@ -1,4 +1,5 @@
 use crate::battle_logic::battle_error::BattleError;
+use crate::battle_logic::battle_event_feedback::{BattleEventFeedback, BattleEventFeedbackEntry, BattleEventFeedbackSource};
 use crate::battle_logic::battle_event_type::BattleEventType;
 use crate::battle_logic::battle_log::BattleLogActionEntry;
 use crate::battle_logic::battle_state::BattleState;
@@ -11,6 +12,7 @@ use std::cmp::Ordering;
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct BattleEvent {
     types: Vec<BattleEventType>,
+    feedback_source: BattleEventFeedbackSource,
     action_index: Option<usize>,
     source_team: TeamSide,
     target_team: TeamSide,
@@ -29,8 +31,16 @@ impl BattleEvent {
         source_monster_index: usize,
         target_monster_index: usize,
     ) -> Self {
+        let feedback_source = BattleEventFeedbackSource {
+            source_team: Some(*source_team),
+            source_monster_index: Some(source_monster_index),
+            action_id: Some(action.get_id()),
+            action_index: Some(action_index),
+        };
+
         Self {
             types: Vec::from(action.get_event_types()),
+            feedback_source,
             action_index: Some(action_index),
             source_team: *source_team,
             target_team: *target_team,
@@ -51,25 +61,31 @@ impl BattleEvent {
         })
     }
 
-    pub fn process(&self, state: &mut BattleState) -> Result<(), BattleError> {
+    pub fn process(&self, state: &mut BattleState) -> Result<BattleEventFeedback, BattleError> {
         if let Some(action_index) = self.action_index {
-            state.update_specific_monster(
+            state.update_specific_monster_without_feedback(
                 self.source_team,
                 self.source_monster_index,
                 &|m| m.on_action_used(action_index),
             )?;
         }
 
-        for event_type in self.types.iter() {
-            event_type.process(
-                state,
-                self.source_team,
-                self.target_team,
-                self.source_monster_index,
-                self.target_monster_index,
-            )?;
-        };
-        Ok(())
+        let feedback_entries: Vec<Vec<BattleEventFeedbackEntry>> = self.types.iter()
+            .map(|event_type| {
+                event_type.process(
+                    state,
+                    self.source_team,
+                    self.target_team,
+                    self.source_monster_index,
+                    self.target_monster_index,
+                )
+            })
+            .collect::<Result<Vec<Vec<_>>, BattleError>>()?;
+
+        Ok(BattleEventFeedback {
+            source: self.feedback_source.clone(),
+            entries: feedback_entries,
+        })
     }
 }
 

@@ -1,5 +1,6 @@
 use crate::battle_logic::battle_error::BattleError;
 use crate::battle_logic::battle_event::BattleEvent;
+use crate::battle_logic::battle_event_feedback::BattleEventFeedbackEntry;
 use crate::battle_logic::battle_log::{BattleLog, BattleLogActionEntry};
 use crate::entities::battle_monster::BattleMonster;
 use crate::enums::event_target::EventTarget;
@@ -73,15 +74,17 @@ impl BattleState {
     }
 
     pub fn process_event_queue(&mut self) -> Result<(), BattleError> {
+        let mut feedback = Vec::new();
         while let Some(event) = self.event_queue.pop() {
-            event.process(self)?
-        };
+            feedback.push(event.process(self)?);
+        }
 
         self.battle_log.add_entry(
             self.get_current_turn(),
             self.current_turn_action_log.clone(),
             self.monsters_b.clone(),
             self.monsters_a.clone(),
+            feedback,
         );
 
         self.team_a_moved.clear();
@@ -166,7 +169,7 @@ impl BattleState {
         ))
     }
 
-    pub fn update_specific_monster<F, R>(&mut self, target_team: TeamSide, index: usize, update_fn: &F) -> Result<R, BattleError>
+    pub fn update_specific_monster_without_feedback<F, R>(&mut self, target_team: TeamSide, index: usize, update_fn: &F) -> Result<R, BattleError>
     where
         F: Fn(&mut BattleMonster) -> Result<R, BattleError>,
     {
@@ -188,50 +191,97 @@ impl BattleState {
         }
     }
 
-    pub fn update_monsters_of_a_team<F, R>(&mut self, target_team: TeamSide, update_fn: F) -> Result<R, BattleError>
+    pub fn update_specific_monster<F, R>(&mut self, target_team: TeamSide, index: usize, update_fn: &F) -> Result<(R, Vec<BattleEventFeedbackEntry>), BattleError>
     where
-        F: Fn(&mut BattleMonster) -> Result<R, BattleError>,
+        F: Fn(&mut BattleMonster) -> Result<(R, Vec<BattleEventFeedbackEntry>), BattleError>,
+    {
+        let (value, mut feedback) = match target_team {
+            TeamSide::TeamA => {
+                if let Some(monster) = self.monsters_a.get_mut(index) {
+                    update_fn(monster)?
+                } else {
+                    return Err(BattleError::InvalidMonsterIndex);
+                }
+            }
+            TeamSide::TeamB => {
+                if let Some(monster) = self.monsters_b.get_mut(index) {
+                    update_fn(monster)?
+                } else {
+                    return Err(BattleError::InvalidMonsterIndex);
+                }
+            }
+        };
+
+        for entry in feedback.iter_mut() {
+            entry.target_team = target_team;
+            entry.target_monster_index = index;
+        }
+
+        Ok((value, feedback))
+    }
+
+    pub fn update_monsters_of_a_team<F, R>(&mut self, target_team: TeamSide, update_fn: F) -> Result<(R, Vec<BattleEventFeedbackEntry>), BattleError>
+    where
+        F: Fn(&mut BattleMonster) -> Result<(R, Vec<BattleEventFeedbackEntry>), BattleError>,
         R: Default,
     {
+        let mut all_feedback = Vec::new();
+
         match target_team {
             TeamSide::TeamA => {
                 for i in 0..self.monsters_a.len() {
-                    self.update_specific_monster(target_team, i, &update_fn)?;
+                    let (_, feedback) = self.update_specific_monster(target_team, i, &update_fn)?;
+                    all_feedback.extend(feedback);
                 }
             }
             TeamSide::TeamB => {
                 for i in 0..self.monsters_b.len() {
-                    self.update_specific_monster(target_team, i, &update_fn)?;
+                    let (_, feedback) = self.update_specific_monster(target_team, i, &update_fn)?;
+                    all_feedback.extend(feedback);
                 }
             }
         }
-        Ok(R::default())
+        Ok((R::default(), all_feedback))
     }
 
-    pub fn update_monsters_of_a_team_with_accumulator<F, R>(&mut self, target_team: TeamSide, update_fn: F) -> Result<R, BattleError>
+    pub fn update_monsters_of_a_team_with_accumulator<F, R>(&mut self, target_team: TeamSide, update_fn: F) -> Result<(R, Vec<BattleEventFeedbackEntry>), BattleError>
     where
-        F: Fn(&mut BattleMonster) -> Result<R, BattleError>,
+        F: Fn(&mut BattleMonster) -> Result<(R, Vec<BattleEventFeedbackEntry>), BattleError>,
         R: Default + Add<Output=R>,
     {
         let mut result = R::default();
+        let mut all_feedback = Vec::new();
+
         match target_team {
             TeamSide::TeamA => {
                 for i in 0..self.monsters_a.len() {
-                    result = result + self.update_specific_monster(target_team, i, &update_fn)?;
+                    let (update_result, feedback) = self.update_specific_monster(target_team, i, &update_fn)?;
+                    result = result + update_result;
+                    all_feedback.extend(feedback);
                 }
             }
             TeamSide::TeamB => {
                 for i in 0..self.monsters_b.len() {
-                    result = result + self.update_specific_monster(target_team, i, &update_fn)?;
+                    let (update_result, feedback) = self.update_specific_monster(target_team, i, &update_fn)?;
+                    result = result + update_result;
+                    all_feedback.extend(feedback);
                 }
             }
         }
-        Ok(result)
+        Ok((result, all_feedback))
     }
 
-    pub fn update_monsters_by_event_target<F, R>(&mut self, source_team: TeamSide, target_team: TeamSide, source_monster_index: usize, target_monster_index: usize, event_target: EventTarget, update_fn: F) -> Result<R, BattleError>
+    pub fn update_monsters_by_event_target<F, R>(
+        &mut self,
+        source_team: TeamSide,
+        target_team: TeamSide,
+        source_monster_index: usize,
+        target_monster_index: usize,
+        event_target: EventTarget,
+        update_fn: F,
+    ) -> Result<(R, Vec<BattleEventFeedbackEntry>), BattleError>
     where
-        F: Fn(&mut BattleMonster) -> Result<R, BattleError>,
+        F: Fn(&mut BattleMonster) -> Result<(R, Vec<BattleEventFeedbackEntry>), BattleError>,
         R: Default,
     {
         match event_target {
@@ -264,9 +314,16 @@ impl BattleState {
         }
     }
 
-    pub fn update_monsters_by_event_target_with_accumulator<F, R>(&mut self, source_team: TeamSide, target_team: TeamSide, source_monster_index: usize, target_monster_index: usize, event_target: EventTarget, update_fn: F) -> Result<R, BattleError>
+    pub fn update_monsters_by_event_target_with_accumulator<F, R>(
+        &mut self,
+        source_team: TeamSide,
+        target_team: TeamSide,
+        source_monster_index: usize,
+        target_monster_index: usize,
+        event_target: EventTarget, update_fn: F,
+    ) -> Result<(R, Vec<BattleEventFeedbackEntry>), BattleError>
     where
-        F: Fn(&mut BattleMonster) -> Result<R, BattleError>,
+        F: Fn(&mut BattleMonster) -> Result<(R, Vec<BattleEventFeedbackEntry>), BattleError>,
         R: Default + Add<Output=R>,
     {
         match event_target {

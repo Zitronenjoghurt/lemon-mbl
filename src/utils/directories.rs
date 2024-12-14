@@ -4,6 +4,10 @@ pub fn data_path() -> PathBuf {
     PathBuf::from("./data")
 }
 
+pub fn config_data_path() -> PathBuf {
+    data_path().join("config.yml")
+}
+
 pub fn game_data_path() -> PathBuf {
     data_path().join("game_data.bin")
 }

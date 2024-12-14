@@ -3,6 +3,7 @@ use crate::entities::damage_type_data::DamageTypeData;
 use crate::enums::damage_type::DamageType;
 use crate::enums::monster_elemental_type::MonsterElementalType;
 use crate::enums::monster_physical_type::MonsterPhysicalType;
+use crate::get_game_data;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
@@ -17,15 +18,25 @@ impl DamageTypeLibrary {
 
     pub fn calculate_damage_factor(
         &self,
-        damage_type: &DamageType,
-        physical_types: &Vec<MonsterPhysicalType>,
-        elemental_types: &Vec<MonsterElementalType>,
+        damage_types: &[DamageType],
+        physical_types: &[MonsterPhysicalType],
+        elemental_types: &[MonsterElementalType],
     ) -> f64 {
-        self.data.get(*damage_type).map_or(1.0, |damage_type_data| {
-            damage_type_data.calculate_damage_factor(
-                physical_types,
-                elemental_types,
-            )
-        })
+        damage_types.iter().fold(1.0_f64, |acc: f64, damage_type| {
+            let factor = self.data.get(*damage_type).map_or(1.0, |damage_type_data| {
+                damage_type_data.calculate_damage_factor(
+                    physical_types,
+                    elemental_types,
+                )
+            });
+
+            if acc.is_infinite() || factor.is_infinite() {
+                f64::INFINITY
+            } else if acc.is_nan() || factor.is_nan() {
+                1.0_f64
+            } else {
+                acc * factor
+            }
+        }).clamp(0.0, get_game_data().config.maximum_damage_factor)
     }
 }

@@ -136,15 +136,24 @@ impl BattleMonster {
     pub fn get_hp_heal_received(&self) -> u32 {
         self.hp_heal_received
     }
+    
+    pub fn process_damage(&mut self, amount: u32, damage_types: &[DamageType]) -> (u32, f64) {
+        let damage_factor = get_game_data().damage_types.calculate_damage_factor(
+            damage_types,
+            self.get_physical_types(),
+            self.get_elemental_types(),
+        );
 
-    pub fn process_damage(&mut self, amount: u32, _damage_types: &[DamageType]) -> u32 {
-        // ToDo: Implement damage type advantages/disadvantages
+        let modified_amount = (amount as f64 * damage_factor)
+            .round()
+            .clamp(0.0, u32::MAX as f64) as u32;
+
         let initial_hp = self.current_hp;
-        self.current_hp = self.current_hp.saturating_sub(amount);
+        self.current_hp = self.current_hp.saturating_sub(modified_amount);
 
         let damage_taken = initial_hp - self.current_hp;
         self.on_damage_taken(damage_taken);
-        damage_taken
+        (damage_taken, damage_factor)
     }
 
     pub fn process_heal(&mut self, amount: u32) -> u32 {

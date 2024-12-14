@@ -35,7 +35,8 @@ impl HealEventType {
                     target_monster_index: target_index,
                     feedback_type: BattleEventFeedbackType::HpHealReceived,
                     feedback_text: BattleEventFeedbackText::HpHealReceived,
-                    value: hp_healed as i64,
+                    value: Some(hp_healed as i64),
+                    factor: None,
                 };
                 Ok((hp_healed, vec![feedback_entry]))
             },
@@ -51,7 +52,8 @@ impl HealEventType {
                     target_monster_index: source_index,
                     feedback_type: BattleEventFeedbackType::HpHealGiven,
                     feedback_text: BattleEventFeedbackText::HpHealGiven,
-                    value: hp_healed_cumulative as i64,
+                    value: Some(hp_healed_cumulative as i64),
+                    factor: None,
                 };
                 Ok(((), vec![feedback_entry]))
             },

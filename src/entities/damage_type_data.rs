@@ -41,8 +41,8 @@ impl DamageTypeData {
 
     pub fn calculate_damage_factor(
         &self,
-        physical_types: &Vec<MonsterPhysicalType>,
-        elemental_types: &Vec<MonsterElementalType>,
+        physical_types: &[MonsterPhysicalType],
+        elemental_types: &[MonsterElementalType],
     ) -> f64 {
         let mut factor = 1.0;
 

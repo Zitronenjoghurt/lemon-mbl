@@ -1,0 +1,11 @@
+$schema: https://json-schema.org/draft-07/schema#
+type: object
+required:
+  - maximum_damage_factor
+properties:
+  maximum_damage_factor:
+    type: number
+    description: Maximum damage factor applied on damage by type resonance
+    minimum: 0.0
+    maximum: 1.7976931348623157e+308
+additionalProperties: false

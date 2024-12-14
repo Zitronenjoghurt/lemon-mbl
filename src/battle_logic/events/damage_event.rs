@@ -31,13 +31,14 @@ impl DamageEventType {
             target_index,
             self.target,
             |m| {
-                let damage = m.process_damage(self.amount, &self.damage_types);
+                let (damage, damage_factor) = m.process_damage(self.amount, &self.damage_types);
                 let feedback_entry = BattleEventFeedbackEntry {
                     target_team,
                     target_monster_index: target_index,
                     feedback_type: BattleEventFeedbackType::RawDamageTaken,
                     feedback_text: BattleEventFeedbackText::DamageTaken,
-                    value: damage as i64,
+                    value: Some(damage as i64),
+                    factor: Some(damage_factor),
                 };
                 Ok((damage, vec![feedback_entry]))
             },
@@ -53,7 +54,8 @@ impl DamageEventType {
                     target_monster_index: source_index,
                     feedback_type: BattleEventFeedbackType::RawDamageDealt,
                     feedback_text: BattleEventFeedbackText::DamageDealt,
-                    value: damage_dealt_cumulative as i64,
+                    value: Some(damage_dealt_cumulative as i64),
+                    factor: None,
                 };
                 Ok(((), vec![feedback_entry]))
             },

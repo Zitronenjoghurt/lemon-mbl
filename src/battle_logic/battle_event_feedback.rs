@@ -11,16 +11,17 @@ pub struct BattleEventFeedbackSource {
     pub action_index: Option<usize>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct BattleEventFeedbackEntry {
     pub target_team: TeamSide,
     pub target_monster_index: usize,
     pub feedback_type: BattleEventFeedbackType,
     pub feedback_text: BattleEventFeedbackText,
-    pub value: i64,
+    pub value: Option<i64>,
+    pub factor: Option<f64>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct BattleEventFeedback {
     pub source: BattleEventFeedbackSource,
     pub entries: Vec<Vec<BattleEventFeedbackEntry>>,

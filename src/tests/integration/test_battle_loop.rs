@@ -38,24 +38,24 @@ fn test_basic_damage_and_heal() {
     assert_eq!(monster_a.get_current_hp(), 50);
     assert_eq!(monster_a.get_action(0).unwrap().get_total_use_count(), 1);
     assert_eq!(monster_a.get_action(1).unwrap().get_total_use_count(), 0);
-    assert_eq!(monster_b.get_current_hp(), 45);
+    assert_eq!(monster_b.get_current_hp(), 15);
     assert_eq!(monster_b.get_action(0).unwrap().get_total_use_count(), 0);
     assert_eq!(monster_b.get_action(1).unwrap().get_total_use_count(), 1);
 
     // Check stats
-    assert_eq!(monster_a.get_damage_dealt(), 10);
+    assert_eq!(monster_a.get_damage_dealt(), 40);
     assert_eq!(monster_b.get_damage_dealt(), 0);
     assert_eq!(monster_a.get_damage_taken(), 0);
-    assert_eq!(monster_b.get_damage_taken(), 10);
+    assert_eq!(monster_b.get_damage_taken(), 40);
     assert_eq!(monster_a.get_hp_heal_given(), 0);
     assert_eq!(monster_b.get_hp_heal_given(), 5);
     assert_eq!(monster_a.get_hp_heal_received(), 0);
     assert_eq!(monster_b.get_hp_heal_received(), 5);
 
-    assert_eq!(monster_a.get_stored_data().get_total_damage_dealt(), 10);
+    assert_eq!(monster_a.get_stored_data().get_total_damage_dealt(), 40);
     assert_eq!(monster_b.get_stored_data().get_total_damage_dealt(), 0);
     assert_eq!(monster_a.get_stored_data().get_total_damage_taken(), 0);
-    assert_eq!(monster_b.get_stored_data().get_total_damage_taken(), 10);
+    assert_eq!(monster_b.get_stored_data().get_total_damage_taken(), 40);
     assert_eq!(monster_a.get_stored_data().get_total_hp_heal_given(), 0);
     assert_eq!(monster_b.get_stored_data().get_total_hp_heal_given(), 5);
     assert_eq!(monster_a.get_stored_data().get_total_hp_heal_received(), 0);

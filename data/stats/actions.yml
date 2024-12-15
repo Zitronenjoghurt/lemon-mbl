@@ -9,6 +9,9 @@ test_attack:
   potential_targets:
     - SpecificOpponent
   priority: 100
+  costs:
+    - resource: Energy
+      amount: 3
 test_heal:
   id: 1
   event_types:
@@ -18,3 +21,6 @@ test_heal:
   potential_targets:
     - OneSelf
   priority: 100
+  costs:
+    - resource: Energy
+      amount: 2

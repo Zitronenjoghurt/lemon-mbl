@@ -1,4 +1,5 @@
 use crate::battle_logic::battle_error::BattleError;
+use crate::battle_logic::battle_event_cost::BattleEventCost;
 use crate::battle_logic::battle_event_feedback::{BattleEventFeedback, BattleEventFeedbackEntry, BattleEventFeedbackSource};
 use crate::battle_logic::battle_event_type::BattleEventType;
 use crate::battle_logic::battle_log::BattleLogActionEntry;
@@ -14,6 +15,7 @@ pub struct BattleEvent {
     types: Vec<BattleEventType>,
     feedback_source: BattleEventFeedbackSource,
     action_index: Option<usize>,
+    costs: Vec<BattleEventCost>,
     source_team: TeamSide,
     target_team: TeamSide,
     source_monster_index: usize,
@@ -42,6 +44,7 @@ impl BattleEvent {
             types: Vec::from(action.get_event_types()),
             feedback_source,
             action_index: Some(action_index),
+            costs: Vec::from(action.get_costs()),
             source_team: *source_team,
             target_team: *target_team,
             source_monster_index,
@@ -61,16 +64,39 @@ impl BattleEvent {
         })
     }
 
-    pub fn process(&self, state: &mut BattleState) -> Result<BattleEventFeedback, BattleError> {
-        if let Some(action_index) = self.action_index {
-            state.update_specific_monster_without_feedback(
+    pub fn check_costs(&self, state: &mut BattleState) -> Result<(), BattleError> {
+        state
+            .get_monster(&self.source_team, self.source_monster_index)
+            .ok_or(BattleError::InvalidMonsterIndex)?
+            .check_costs(&self.costs)
+    }
+
+    pub fn process_costs(&self, state: &mut BattleState) -> Result<Vec<BattleEventFeedbackEntry>, BattleError> {
+        let mut cost_feedback_entries = Vec::new();
+        for cost in &self.costs {
+            let (_, feedback) = state.update_specific_monster(
                 self.source_team,
                 self.source_monster_index,
-                &|m| m.on_action_used(action_index),
+                &|m| {
+                    m.process_cost(cost)?;
+                    let feedback_entry = BattleEventFeedbackEntry {
+                        target_team: self.source_team,
+                        target_monster_index: self.source_monster_index,
+                        feedback_type: cost.resource.get_used_feedback_type(),
+                        feedback_text: cost.resource.get_used_feedback_text(),
+                        value: Some(cost.amount as i64),
+                        factor: None,
+                    };
+                    Ok(((), vec![feedback_entry]))
+                },
             )?;
+            cost_feedback_entries.extend(feedback);
         }
+        Ok(cost_feedback_entries)
+    }
 
-        let feedback_entries: Vec<Vec<BattleEventFeedbackEntry>> = self.types.iter()
+    pub fn process_event_types(&self, state: &mut BattleState) -> Result<Vec<Vec<BattleEventFeedbackEntry>>, BattleError> {
+        self.types.iter()
             .map(|event_type| {
                 event_type.process(
                     state,
@@ -80,7 +106,26 @@ impl BattleEvent {
                     self.target_monster_index,
                 )
             })
-            .collect::<Result<Vec<Vec<_>>, BattleError>>()?;
+            .collect::<Result<Vec<Vec<_>>, BattleError>>()
+    }
+
+    pub fn process(&self, state: &mut BattleState) -> Result<BattleEventFeedback, BattleError> {
+        self.check_costs(state)?;
+
+        let cost_feedback_entries = self.process_costs(state)?;
+        let type_feedback_entries = self.process_event_types(state)?;
+
+        let mut feedback_entries: Vec<Vec<BattleEventFeedbackEntry>> = Vec::new();
+        feedback_entries.push(cost_feedback_entries);
+        feedback_entries.extend(type_feedback_entries);
+
+        if let Some(action_index) = self.action_index {
+            state.update_specific_monster_without_feedback(
+                self.source_team,
+                self.source_monster_index,
+                &|m| m.on_action_used(action_index),
+            )?;
+        }
 
         Ok(BattleEventFeedback {
             source: self.feedback_source.clone(),

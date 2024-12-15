@@ -51,6 +51,12 @@ fn test_basic_damage_and_heal() {
     assert_eq!(monster_b.get_hp_heal_given(), 5);
     assert_eq!(monster_a.get_hp_heal_received(), 0);
     assert_eq!(monster_b.get_hp_heal_received(), 5);
+    assert_eq!(monster_a.get_momentum_used(), 0);
+    assert_eq!(monster_b.get_momentum_used(), 0);
+    assert_eq!(monster_a.get_energy_used(), 3);
+    assert_eq!(monster_b.get_energy_used(), 2);
+    assert_eq!(monster_a.get_hp_used(), 0);
+    assert_eq!(monster_b.get_hp_used(), 0);
 
     assert_eq!(monster_a.get_stored_data().get_total_damage_dealt(), 40);
     assert_eq!(monster_b.get_stored_data().get_total_damage_dealt(), 0);
@@ -60,6 +66,12 @@ fn test_basic_damage_and_heal() {
     assert_eq!(monster_b.get_stored_data().get_total_hp_heal_given(), 5);
     assert_eq!(monster_a.get_stored_data().get_total_hp_heal_received(), 0);
     assert_eq!(monster_b.get_stored_data().get_total_hp_heal_received(), 5);
+    assert_eq!(monster_a.get_stored_data().get_total_momentum_used(), 0);
+    assert_eq!(monster_b.get_stored_data().get_total_momentum_used(), 0);
+    assert_eq!(monster_a.get_stored_data().get_total_energy_used(), 3);
+    assert_eq!(monster_b.get_stored_data().get_total_energy_used(), 2);
+    assert_eq!(monster_a.get_stored_data().get_total_hp_used(), 0);
+    assert_eq!(monster_b.get_stored_data().get_total_hp_used(), 0);
 
     // Check battle state save/load
     let mut game_state = GameState::default();

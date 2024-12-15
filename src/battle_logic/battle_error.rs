@@ -10,8 +10,12 @@ pub enum BattleError {
     InvalidActionIndex,
     #[error("Invalid action target")]
     InvalidActionTarget,
+    #[error("Insufficient momentum")]
+    InsufficientMomentum,
     #[error("Insufficient energy")]
     InsufficientEnergy,
+    #[error("Insufficient hp")]
+    InsufficientHp,
     #[error("Already moved")]
     AlreadyMoved,
 }

@@ -22,6 +22,9 @@ pub struct StoredMonster {
     total_damage_dealt: u32,
     total_hp_heal_given: u32,
     total_hp_heal_received: u32,
+    total_momentum_used: u32,
+    total_energy_used: u32,
+    total_hp_used: u32,
 }
 
 impl HasAssignableId for StoredMonster {
@@ -51,6 +54,9 @@ impl StoredMonster {
             total_damage_taken: 0,
             total_hp_heal_given: 0,
             total_hp_heal_received: 0,
+            total_momentum_used: 0,
+            total_energy_used: 0,
+            total_hp_used: 0,
             data,
         }
     }
@@ -66,6 +72,9 @@ impl StoredMonster {
             total_damage_taken: stored_monster.total_damage_taken,
             total_hp_heal_given: stored_monster.total_hp_heal_given,
             total_hp_heal_received: stored_monster.total_hp_heal_received,
+            total_momentum_used: stored_monster.total_momentum_used,
+            total_energy_used: stored_monster.total_energy_used,
+            total_hp_used: stored_monster.total_hp_used,
             data: stored_monster.data,
         }
     }
@@ -102,6 +111,18 @@ impl StoredMonster {
         self.actions.push(action);
     }
 
+    pub fn get_total_momentum_used(&self) -> u32 {
+        self.total_momentum_used
+    }
+
+    pub fn get_total_energy_used(&self) -> u32 {
+        self.total_energy_used
+    }
+
+    pub fn get_total_hp_used(&self) -> u32 {
+        self.total_hp_used
+    }
+
     pub fn get_total_damage_dealt(&self) -> u32 {
         self.total_damage_dealt
     }
@@ -116,6 +137,18 @@ impl StoredMonster {
 
     pub fn get_total_hp_heal_received(&self) -> u32 {
         self.total_hp_heal_received
+    }
+
+    pub fn on_momentum_used(&mut self, amount: u32) {
+        self.total_momentum_used = self.total_momentum_used.saturating_add(amount);
+    }
+
+    pub fn on_energy_used(&mut self, amount: u32) {
+        self.total_energy_used = self.total_energy_used.saturating_add(amount);
+    }
+
+    pub fn on_hp_used(&mut self, amount: u32) {
+        self.total_hp_used = self.total_hp_used.saturating_add(amount);
     }
 
     pub fn on_damage_dealt(&mut self, damage: u32) {

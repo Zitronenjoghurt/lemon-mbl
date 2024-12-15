@@ -7,4 +7,7 @@ pub enum BattleEventFeedbackText {
     DamageDealt = 1,
     HpHealReceived = 2,
     HpHealGiven = 3,
+    MomentumUsed = 4,
+    EnergyUsed = 5,
+    HpUsed = 6,
 }

@@ -1,3 +1,4 @@
+use crate::battle_logic::battle_event_cost::BattleEventCost;
 use crate::battle_logic::battle_event_type::BattleEventType;
 use crate::enums::action_target::ActionTarget;
 use crate::get_game_data;
@@ -20,6 +21,7 @@ pub struct ActionData {
     event_types: Vec<BattleEventType>,
     potential_targets: Vec<ActionTarget>,
     priority: u8,
+    costs: Vec<BattleEventCost>,
 }
 
 impl ArcRefFromKey for ActionData {
@@ -107,5 +109,9 @@ impl ActionDataAccess for ActionData {
 
     fn has_potential_target(&self, action_target: &ActionTarget) -> bool {
         self.potential_targets.contains(action_target)
+    }
+
+    fn get_costs(&self) -> &[BattleEventCost] {
+        &self.costs
     }
 }

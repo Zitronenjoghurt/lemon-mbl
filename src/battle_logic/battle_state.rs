@@ -5,6 +5,7 @@ use crate::battle_logic::battle_log::{BattleLog, BattleLogActionEntry};
 use crate::entities::battle_monster::BattleMonster;
 use crate::enums::event_target::EventTarget;
 use crate::enums::team_side::TeamSide;
+use crate::traits::action_data_access::ActionDataAccess;
 use serde::{Deserialize, Serialize};
 use std::collections::{BinaryHeap, HashSet};
 use std::ops::Add;
@@ -82,8 +83,8 @@ impl BattleState {
         self.battle_log.add_entry(
             self.get_current_turn(),
             self.current_turn_action_log.clone(),
-            self.monsters_b.clone(),
             self.monsters_a.clone(),
+            self.monsters_b.clone(),
             feedback,
         );
 
@@ -158,6 +159,8 @@ impl BattleState {
         if !action.validate_target(source_team, target_team, source_monster_index, target_monster_index) {
             return Err(BattleError::InvalidActionTarget);
         }
+
+        source_monster.check_costs(action.get_costs())?;
 
         Ok(BattleEvent::from_action(
             action,

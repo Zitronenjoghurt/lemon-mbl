@@ -1,3 +1,4 @@
+use crate::battle_logic::battle_event_cost::BattleEventCost;
 use crate::battle_logic::battle_event_type::BattleEventType;
 use crate::entities::action_data::ActionData;
 use crate::enums::action_target::ActionTarget;
@@ -94,5 +95,9 @@ impl ActionDataAccess for StoredAction {
 
     fn has_potential_target(&self, action_target: &ActionTarget) -> bool {
         self.data.has_potential_target(action_target)
+    }
+
+    fn get_costs(&self) -> &[BattleEventCost] {
+        self.data.get_costs()
     }
 }

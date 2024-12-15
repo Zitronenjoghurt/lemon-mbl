@@ -1,4 +1,5 @@
 use crate::battle_logic::battle_error::BattleError;
+use crate::battle_logic::battle_event_cost::BattleEventCost;
 use crate::calculations::stats::energy_from_potential_and_vigilance;
 use crate::entities::monster_data::MonsterData;
 use crate::entities::stored_action::StoredAction;
@@ -7,6 +8,7 @@ use crate::enums::damage_type::DamageType;
 use crate::enums::monster_elemental_type::MonsterElementalType;
 use crate::enums::monster_flag::MonsterFlag;
 use crate::enums::monster_physical_type::MonsterPhysicalType;
+use crate::enums::resource_type::ResourceType;
 use crate::get_game_data;
 use crate::serialization::arc_ref;
 use crate::traits::monster_data_access::MonsterDataAccess;
@@ -26,6 +28,9 @@ pub struct BattleMonster {
     damage_taken: u32,
     hp_heal_given: u32,
     hp_heal_received: u32,
+    momentum_used: u32,
+    energy_used: u32,
+    hp_used: u32,
 }
 
 impl BattleMonster {
@@ -46,6 +51,9 @@ impl BattleMonster {
             damage_taken: 0,
             hp_heal_given: 0,
             hp_heal_received: 0,
+            momentum_used: 0,
+            energy_used: 0,
+            hp_used: 0,
             energy,
             data,
         }
@@ -64,6 +72,9 @@ impl BattleMonster {
             damage_taken: 0,
             hp_heal_given: 0,
             hp_heal_received: 0,
+            momentum_used: 0,
+            energy_used: 0,
+            hp_used: 0,
             energy,
             data,
         }
@@ -121,6 +132,18 @@ impl BattleMonster {
         self.energy = energy;
     }
 
+    pub fn get_momentum_used(&self) -> u32 {
+        self.momentum_used
+    }
+
+    pub fn get_energy_used(&self) -> u32 {
+        self.energy_used
+    }
+
+    pub fn get_hp_used(&self) -> u32 {
+        self.hp_used
+    }
+
     pub fn get_damage_dealt(&self) -> u32 {
         self.damage_dealt
     }
@@ -136,7 +159,67 @@ impl BattleMonster {
     pub fn get_hp_heal_received(&self) -> u32 {
         self.hp_heal_received
     }
-    
+
+    pub fn check_costs(&self, costs: &[BattleEventCost]) -> Result<(), BattleError> {
+        for cost in costs {
+            match cost.resource {
+                ResourceType::Momentum => {
+                    if self.get_momentum() < cost.amount {
+                        return Err(BattleError::InsufficientMomentum);
+                    }
+                }
+                ResourceType::Energy => {
+                    if self.get_energy() < cost.amount {
+                        return Err(BattleError::InsufficientEnergy);
+                    }
+                }
+                ResourceType::Hp => {
+                    if self.get_current_hp() < cost.amount {
+                        return Err(BattleError::InsufficientHp);
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub fn process_cost(&mut self, cost: &BattleEventCost) -> Result<(), BattleError> {
+        match cost.resource {
+            ResourceType::Momentum => {
+                if self.get_momentum() < cost.amount {
+                    return Err(BattleError::InsufficientMomentum);
+                } else {
+                    self.momentum = self.momentum.saturating_sub(cost.amount);
+                    self.on_momentum_used(cost.amount);
+                }
+            }
+            ResourceType::Energy => {
+                if self.get_energy() < cost.amount {
+                    return Err(BattleError::InsufficientEnergy);
+                } else {
+                    self.energy = self.energy.saturating_sub(cost.amount);
+                    self.on_energy_used(cost.amount);
+                }
+            }
+            ResourceType::Hp => {
+                if self.get_current_hp() < cost.amount {
+                    return Err(BattleError::InsufficientHp);
+                } else {
+                    self.current_hp = self.current_hp.saturating_sub(cost.amount);
+                    self.on_hp_used(cost.amount);
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub fn process_costs(&mut self, costs: &[BattleEventCost]) -> Result<(), BattleError> {
+        for cost in costs {
+            self.process_cost(cost)?;
+        }
+        Ok(())
+    }
+
     pub fn process_damage(&mut self, amount: u32, damage_types: &[DamageType]) -> (u32, f64) {
         let damage_factor = get_game_data().damage_types.calculate_damage_factor(
             damage_types,
@@ -169,6 +252,21 @@ impl BattleMonster {
         self.get_action_mut(action_index)
             .ok_or(BattleError::InvalidActionIndex)
             .map(|action| action.on_use())
+    }
+
+    pub fn on_momentum_used(&mut self, amount: u32) {
+        self.storage_data.on_momentum_used(amount);
+        self.momentum_used = self.momentum_used.saturating_add(amount);
+    }
+
+    pub fn on_energy_used(&mut self, amount: u32) {
+        self.storage_data.on_energy_used(amount);
+        self.energy_used = self.energy_used.saturating_add(amount);
+    }
+
+    pub fn on_hp_used(&mut self, amount: u32) {
+        self.storage_data.on_hp_used(amount);
+        self.hp_used = self.hp_used.saturating_add(amount);
     }
 
     pub fn on_damage_dealt(&mut self, amount: u32) {

@@ -60,6 +60,19 @@ patternProperties:
         items:
           $ref: '#/definitions/actionTarget'
         uniqueItems: true
+      costs:
+        type: array
+        items:
+          type: object
+          required: [ resource, amount ]
+          properties:
+            resource:
+              $ref: '#/definitions/resourceType'
+            amount:
+              type: integer
+              minimum: 0
+              maximum: 65535
+        uniqueItems: true
 definitions:
   damageType:
     type: string
@@ -89,3 +102,9 @@ definitions:
       - SourceTeam
       - TargetMonster
       - TargetTeam
+  resourceType:
+    type: string
+    enum:
+      - Momentum
+      - Energy
+      - Hp

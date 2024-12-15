@@ -1,14 +1,18 @@
 use crate::battle_logic::battle_error::BattleError;
 use crate::battle_logic::battle_event_cost::BattleEventCost;
+use crate::battle_logic::battle_event_feedback::BattleEventFeedbackEntry;
 use crate::calculations::stats::energy_from_potential_and_vigilance;
 use crate::entities::monster_data::MonsterData;
 use crate::entities::stored_action::StoredAction;
 use crate::entities::stored_monster::StoredMonster;
+use crate::enums::battle_event_feedback_text::BattleEventFeedbackText;
+use crate::enums::battle_event_feedback_type::BattleEventFeedbackType;
 use crate::enums::damage_type::DamageType;
 use crate::enums::monster_elemental_type::MonsterElementalType;
 use crate::enums::monster_flag::MonsterFlag;
 use crate::enums::monster_physical_type::MonsterPhysicalType;
 use crate::enums::resource_type::ResourceType;
+use crate::enums::team_side::TeamSide;
 use crate::get_game_data;
 use crate::serialization::arc_ref;
 use crate::traits::monster_data_access::MonsterDataAccess;
@@ -31,6 +35,10 @@ pub struct BattleMonster {
     momentum_used: u32,
     energy_used: u32,
     hp_used: u32,
+    momentum_generated: u32,
+    energy_generated: u32,
+    momentum_generated_for_others: u32,
+    energy_generated_for_others: u32,
 }
 
 impl BattleMonster {
@@ -54,6 +62,10 @@ impl BattleMonster {
             momentum_used: 0,
             energy_used: 0,
             hp_used: 0,
+            momentum_generated: 0,
+            energy_generated: 0,
+            momentum_generated_for_others: 0,
+            energy_generated_for_others: 0,
             energy,
             data,
         }
@@ -75,6 +87,10 @@ impl BattleMonster {
             momentum_used: 0,
             energy_used: 0,
             hp_used: 0,
+            momentum_generated: 0,
+            energy_generated: 0,
+            momentum_generated_for_others: 0,
+            energy_generated_for_others: 0,
             energy,
             data,
         }
@@ -160,6 +176,22 @@ impl BattleMonster {
         self.hp_heal_received
     }
 
+    pub fn get_momentum_generated(&self) -> u32 {
+        self.momentum_generated
+    }
+
+    pub fn get_energy_generated(&self) -> u32 {
+        self.energy_generated
+    }
+
+    pub fn get_momentum_generated_for_others(&self) -> u32 {
+        self.momentum_generated_for_others
+    }
+
+    pub fn get_energy_generated_for_others(&self) -> u32 {
+        self.energy_generated_for_others
+    }
+
     pub fn check_costs(&self, costs: &[BattleEventCost]) -> Result<(), BattleError> {
         for cost in costs {
             match cost.resource {
@@ -241,11 +273,63 @@ impl BattleMonster {
 
     pub fn process_heal(&mut self, amount: u32) -> u32 {
         let initial_hp = self.current_hp;
-        self.current_hp = self.current_hp.saturating_add(amount);
+        self.current_hp = self.current_hp.saturating_add(amount).clamp(0, self.get_vitality());
 
         let hp_healed = self.current_hp - initial_hp;
         self.on_hp_heal_received(hp_healed);
         hp_healed
+    }
+
+    pub fn generate_momentum(&mut self, amount: u32) -> u32 {
+        let initial_momentum = self.get_momentum();
+        self.momentum = self.momentum.saturating_add(amount).clamp(0, self.get_control());
+
+        let momentum_received = self.momentum - initial_momentum;
+        self.on_momentum_generated(momentum_received);
+        momentum_received
+    }
+
+    pub fn generate_energy(&mut self, amount: u32) -> u32 {
+        let initial_energy = self.get_energy();
+        self.energy = self.energy.saturating_add(amount).clamp(0, self.get_potential());
+
+        let energy_received = self.energy - initial_energy;
+        self.on_energy_generated(energy_received);
+        energy_received
+    }
+
+    pub fn process_resource_generation(&mut self, resource: ResourceType, amount: u32) -> u32 {
+        match resource {
+            ResourceType::Momentum => {
+                self.generate_momentum(amount)
+            }
+            ResourceType::Energy => {
+                self.generate_energy(amount)
+            }
+            ResourceType::Hp => {
+                self.process_heal(amount)
+            }
+        }
+    }
+
+    pub fn on_turn_end(&mut self, team: TeamSide, index: usize) -> Vec<BattleEventFeedbackEntry> {
+        let mut feedback_entries = Vec::new();
+
+        let energy_generated = self.generate_energy(self.get_momentum());
+        if energy_generated > 0 {
+            feedback_entries.push(
+                BattleEventFeedbackEntry {
+                    target_team: team,
+                    target_monster_index: index,
+                    feedback_type: BattleEventFeedbackType::MomentumGeneratedEnergy,
+                    feedback_text: BattleEventFeedbackText::MomentumGeneratedEnergy,
+                    value: Some(energy_generated as i64),
+                    factor: None,
+                }
+            )
+        };
+
+        feedback_entries
     }
 
     pub fn on_action_used(&mut self, action_index: usize) -> Result<(), BattleError> {
@@ -287,6 +371,26 @@ impl BattleMonster {
     pub fn on_hp_heal_received(&mut self, amount: u32) {
         self.storage_data.on_hp_heal_received(amount);
         self.hp_heal_received = self.hp_heal_received.saturating_add(amount);
+    }
+
+    pub fn on_momentum_generated(&mut self, amount: u32) {
+        self.storage_data.on_momentum_generated(amount);
+        self.momentum_generated = self.momentum_generated.saturating_add(amount);
+    }
+
+    pub fn on_energy_generated(&mut self, amount: u32) {
+        self.storage_data.on_energy_generated(amount);
+        self.energy_generated = self.energy_generated.saturating_add(amount);
+    }
+
+    pub fn on_momentum_generated_for_others(&mut self, amount: u32) {
+        self.storage_data.on_momentum_generated_for_others(amount);
+        self.momentum_generated_for_others = self.momentum_generated_for_others.saturating_add(amount);
+    }
+
+    pub fn on_energy_generated_for_others(&mut self, amount: u32) {
+        self.storage_data.on_energy_generated_for_others(amount);
+        self.energy_generated_for_others = self.energy_generated_for_others.saturating_add(amount);
     }
 }
 

@@ -1,11 +1,12 @@
 use crate::battle_logic::battle_error::BattleError;
 use crate::battle_logic::battle_event::BattleEvent;
-use crate::battle_logic::battle_event_feedback::BattleEventFeedbackEntry;
+use crate::battle_logic::battle_event_feedback::{BattleEventFeedback, BattleEventFeedbackEntry, BattleEventFeedbackSource};
 use crate::battle_logic::battle_log::{BattleLog, BattleLogActionEntry};
 use crate::entities::battle_monster::BattleMonster;
 use crate::enums::event_target::EventTarget;
 use crate::enums::team_side::TeamSide;
 use crate::traits::action_data_access::ActionDataAccess;
+use crate::traits::is_even::IsEven;
 use serde::{Deserialize, Serialize};
 use std::collections::{BinaryHeap, HashSet};
 use std::ops::Add;
@@ -70,15 +71,55 @@ impl BattleState {
         self.turn_counter
     }
 
+    pub fn get_current_preferred_team(&self) -> TeamSide {
+        if self.turn_counter.is_even() {
+            TeamSide::TeamA
+        } else {
+            TeamSide::TeamB
+        }
+    }
+
     pub fn queue_event(&mut self, event: BattleEvent) {
         self.event_queue.push(event);
     }
 
+    pub fn process_team_turn_end(&mut self, team_side: TeamSide) -> Vec<Vec<BattleEventFeedbackEntry>> {
+        match team_side {
+            TeamSide::TeamA => {
+                self.monsters_a
+                    .iter_mut()
+                    .enumerate()
+                    .map(|(index, monster)| monster.on_turn_end(team_side, index))
+                    .collect()
+            }
+            TeamSide::TeamB => {
+                self.monsters_b
+                    .iter_mut()
+                    .enumerate()
+                    .map(|(index, monster)| monster.on_turn_end(team_side, index))
+                    .collect()
+            }
+        }
+    }
+
     pub fn process_event_queue(&mut self) -> Result<(), BattleError> {
         let mut feedback = Vec::new();
+
         while let Some(event) = self.event_queue.pop() {
             feedback.push(event.process(self)?);
         }
+
+        let mut turn_end_feedback_entries = Vec::new();
+        let preferred_team = self.get_current_preferred_team();
+        let entries_1 = self.process_team_turn_end(preferred_team);
+        let entries_2 = self.process_team_turn_end(preferred_team.opposite());
+        turn_end_feedback_entries.extend(entries_1);
+        turn_end_feedback_entries.extend(entries_2);
+        let turn_end_feedback = BattleEventFeedback {
+            source: BattleEventFeedbackSource::default(),
+            entries: turn_end_feedback_entries,
+        };
+        feedback.push(turn_end_feedback);
 
         self.battle_log.add_entry(
             self.get_current_turn(),

@@ -21,6 +21,7 @@ pub struct ActionData {
     event_types: Vec<BattleEventType>,
     potential_targets: Vec<ActionTarget>,
     priority: u8,
+    #[serde(default)]
     costs: Vec<BattleEventCost>,
 }
 

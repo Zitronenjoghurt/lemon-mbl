@@ -3,7 +3,7 @@ use crate::enums::battle_event_feedback_type::BattleEventFeedbackType;
 use crate::enums::team_side::TeamSide;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct BattleEventFeedbackSource {
     pub source_team: Option<TeamSide>,
     pub source_monster_index: Option<usize>,

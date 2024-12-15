@@ -24,3 +24,13 @@ test_heal:
   costs:
     - resource: Energy
       amount: 2
+flow:
+  id: 2
+  event_types:
+    - GenerateResource:
+        resource: Momentum
+        amount: 5
+        target: TargetMonster
+  potential_targets:
+    - OneSelf
+  priority: 200

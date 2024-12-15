@@ -25,6 +25,10 @@ pub struct StoredMonster {
     total_momentum_used: u32,
     total_energy_used: u32,
     total_hp_used: u32,
+    total_momentum_generated: u32,
+    total_energy_generated: u32,
+    total_momentum_generated_for_others: u32,
+    total_energy_generated_for_others: u32,
 }
 
 impl HasAssignableId for StoredMonster {
@@ -57,6 +61,10 @@ impl StoredMonster {
             total_momentum_used: 0,
             total_energy_used: 0,
             total_hp_used: 0,
+            total_momentum_generated: 0,
+            total_energy_generated: 0,
+            total_momentum_generated_for_others: 0,
+            total_energy_generated_for_others: 0,
             data,
         }
     }
@@ -75,6 +83,10 @@ impl StoredMonster {
             total_momentum_used: stored_monster.total_momentum_used,
             total_energy_used: stored_monster.total_energy_used,
             total_hp_used: stored_monster.total_hp_used,
+            total_momentum_generated: stored_monster.total_momentum_generated,
+            total_energy_generated: stored_monster.total_energy_generated,
+            total_momentum_generated_for_others: stored_monster.total_momentum_generated_for_others,
+            total_energy_generated_for_others: stored_monster.total_energy_generated,
             data: stored_monster.data,
         }
     }
@@ -139,6 +151,22 @@ impl StoredMonster {
         self.total_hp_heal_received
     }
 
+    pub fn get_total_momentum_generated(&self) -> u32 {
+        self.total_momentum_generated
+    }
+
+    pub fn get_total_energy_generated(&self) -> u32 {
+        self.total_energy_generated
+    }
+
+    pub fn get_total_momentum_generated_for_others(&self) -> u32 {
+        self.total_momentum_generated_for_others
+    }
+
+    pub fn get_total_energy_generated_for_others(&self) -> u32 {
+        self.total_energy_generated_for_others
+    }
+
     pub fn on_momentum_used(&mut self, amount: u32) {
         self.total_momentum_used = self.total_momentum_used.saturating_add(amount);
     }
@@ -165,6 +193,22 @@ impl StoredMonster {
 
     pub fn on_hp_heal_received(&mut self, hp_healed: u32) {
         self.total_hp_heal_received = self.total_hp_heal_received.saturating_add(hp_healed);
+    }
+
+    pub fn on_momentum_generated(&mut self, momentum: u32) {
+        self.total_momentum_generated = self.total_momentum_generated.saturating_add(momentum);
+    }
+
+    pub fn on_energy_generated(&mut self, energy: u32) {
+        self.total_energy_generated = self.total_energy_generated.saturating_add(energy);
+    }
+
+    pub fn on_momentum_generated_for_others(&mut self, momentum: u32) {
+        self.total_momentum_generated_for_others = self.total_energy_generated_for_others.saturating_add(momentum);
+    }
+
+    pub fn on_energy_generated_for_others(&mut self, energy: u32) {
+        self.total_energy_generated_for_others = self.total_energy_generated_for_others.saturating_add(energy);
     }
 }
 

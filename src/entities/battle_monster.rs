@@ -8,6 +8,7 @@ use crate::entities::stored_monster::StoredMonster;
 use crate::enums::battle_event_feedback_text::BattleEventFeedbackText;
 use crate::enums::battle_event_feedback_type::BattleEventFeedbackType;
 use crate::enums::damage_type::DamageType;
+use crate::enums::modifier_flag::ModifierFlag;
 use crate::enums::monster_elemental_type::MonsterElementalType;
 use crate::enums::monster_flag::MonsterFlag;
 use crate::enums::monster_physical_type::MonsterPhysicalType;
@@ -17,6 +18,7 @@ use crate::get_game_data;
 use crate::serialization::arc_ref;
 use crate::traits::monster_data_access::MonsterDataAccess;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::sync::Arc;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -24,6 +26,7 @@ pub struct BattleMonster {
     #[serde(with = "arc_ref")]
     data: Arc<MonsterData>,
     storage_data: StoredMonster,
+    modifier_flags: HashMap<ModifierFlag, u8>,
     current_hp: u32,
     desperation: u32,
     energy: u32,
@@ -53,6 +56,7 @@ impl BattleMonster {
         Self {
             current_hp: data.get_vitality(),
             storage_data: StoredMonster::from_data(data.clone()),
+            modifier_flags: HashMap::new(),
             desperation: 0,
             momentum: 0,
             damage_dealt: 0,
@@ -78,6 +82,7 @@ impl BattleMonster {
         Self {
             current_hp: stored_monster.get_current_hp(),
             storage_data: stored_monster,
+            modifier_flags: HashMap::new(),
             desperation: 0,
             momentum: 0,
             damage_dealt: 0,
@@ -110,6 +115,34 @@ impl BattleMonster {
 
     pub fn get_stored_data(&self) -> StoredMonster {
         self.storage_data.clone()
+    }
+
+    pub fn get_modifier_flag(&self, flag: ModifierFlag) -> Option<u8> {
+        self.modifier_flags.get(&flag).copied()
+    }
+
+    pub fn has_modifier_flag(&self, flag: ModifierFlag) -> bool {
+        self.modifier_flags.contains_key(&flag)
+    }
+
+    pub fn get_modifier_flags(&self) -> &HashMap<ModifierFlag, u8> {
+        &self.modifier_flags
+    }
+
+    pub fn add_modifier_flag(&mut self, flag: ModifierFlag) {
+        self.modifier_flags
+            .entry(flag)
+            .and_modify(|count| *count += 1)
+            .or_insert(1);
+    }
+
+    pub fn remove_modifier_flag(&mut self, flag: ModifierFlag) {
+        if let Some(count) = self.modifier_flags.get_mut(&flag) {
+            *count -= 1;
+            if *count == 0 {
+                self.modifier_flags.remove(&flag);
+            }
+        }
     }
 
     pub fn get_current_hp(&self) -> u32 {

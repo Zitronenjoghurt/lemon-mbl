@@ -95,21 +95,41 @@ impl BattleEvent {
         Ok(cost_feedback_entries)
     }
 
-    pub fn process_event_types(&self, state: &mut BattleState) -> Result<Vec<Vec<BattleEventFeedbackEntry>>, BattleError> {
-        self.types.iter()
-            .map(|event_type| {
-                event_type.process(
-                    state,
-                    self.source_team,
-                    self.target_team,
-                    self.source_monster_index,
-                    self.target_monster_index,
-                )
-            })
-            .collect::<Result<Vec<Vec<_>>, BattleError>>()
+    pub fn process_event_types(&mut self, state: &mut BattleState) -> Result<Vec<Vec<BattleEventFeedbackEntry>>, BattleError> {
+        let mut feedback_entries = Vec::new();
+
+        while let Some(mut event_type) = self.types.pop() {
+            let mut event_type_feedback_entries = Vec::new();
+
+            if !event_type.start_triggered() {
+                let on_start_feedback_entries = event_type.on_start()?;
+                event_type_feedback_entries.extend(on_start_feedback_entries);
+            }
+
+            let process_feedback_entries = event_type.process(
+                state,
+                self.source_team,
+                self.target_team,
+                self.source_monster_index,
+                self.target_monster_index,
+            )?;
+            event_type_feedback_entries.extend(process_feedback_entries);
+
+            if !event_type.should_remove() {
+                self.types.push(event_type);
+            } else {
+                let on_end_feedback_entries = event_type.on_end()?;
+                event_type_feedback_entries.extend(on_end_feedback_entries);
+            }
+
+            feedback_entries.push(event_type_feedback_entries);
+        }
+
+        feedback_entries.reverse();
+        Ok(feedback_entries)
     }
 
-    pub fn process(&self, state: &mut BattleState) -> Result<BattleEventFeedback, BattleError> {
+    pub fn process(&mut self, state: &mut BattleState) -> Result<BattleEventFeedback, BattleError> {
         self.check_costs(state)?;
 
         let cost_feedback_entries = self.process_costs(state)?;
@@ -131,6 +151,10 @@ impl BattleEvent {
             source: self.feedback_source.clone(),
             entries: feedback_entries,
         })
+    }
+
+    pub fn should_remove(&self) -> bool {
+        self.types.is_empty()
     }
 }
 

@@ -28,7 +28,7 @@ impl BattleEventType {
     }
 
     pub fn process(
-        &self,
+        &mut self,
         state: &mut BattleState,
         source_team: TeamSide,
         target_team: TeamSide,
@@ -74,5 +74,21 @@ impl BattleEventType {
             Self::GenerateResource(event) => Some(event.resource),
             _ => None,
         }
+    }
+
+    pub fn on_start(&mut self) -> Result<Vec<BattleEventFeedbackEntry>, BattleError> {
+        Ok(Vec::new())
+    }
+
+    pub fn start_triggered(&self) -> bool {
+        true
+    }
+
+    pub fn should_remove(&self) -> bool {
+        true
+    }
+
+    pub fn on_end(&mut self) -> Result<Vec<BattleEventFeedbackEntry>, BattleError> {
+        Ok(Vec::new())
     }
 }

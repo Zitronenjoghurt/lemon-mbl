@@ -17,8 +17,8 @@ pub struct DamageEventType {
 
 impl DamageEventType {
     pub fn process(
-        &self, state:
-        &mut BattleState,
+        &self,
+        state: &mut BattleState,
         source_team: TeamSide,
         target_team: TeamSide,
         source_index: usize,

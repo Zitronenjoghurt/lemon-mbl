@@ -105,8 +105,11 @@ impl BattleState {
     pub fn process_event_queue(&mut self) -> Result<(), BattleError> {
         let mut feedback = Vec::new();
 
-        while let Some(event) = self.event_queue.pop() {
+        while let Some(mut event) = self.event_queue.pop() {
             feedback.push(event.process(self)?);
+            if !event.should_remove() {
+                self.event_queue.push(event);
+            }
         }
 
         let mut turn_end_feedback_entries = Vec::new();

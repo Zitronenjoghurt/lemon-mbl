@@ -10,3 +10,5 @@ pub mod type_resonance;
 pub mod battle_event_feedback_type;
 pub mod battle_event_feedback_text;
 pub mod resource_type;
+pub mod modifier_flag;
+pub mod status_effect;

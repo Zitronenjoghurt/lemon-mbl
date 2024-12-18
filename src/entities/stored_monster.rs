@@ -1,5 +1,6 @@
 use crate::entities::battle_monster::BattleMonster;
 use crate::entities::monster_data::MonsterData;
+use crate::entities::monster_stats::MonsterStats;
 use crate::entities::stored_action::StoredAction;
 use crate::enums::monster_elemental_type::MonsterElementalType;
 use crate::enums::monster_flag::MonsterFlag;
@@ -16,19 +17,9 @@ pub struct StoredMonster {
     #[serde(with = "arc_ref")]
     data: Arc<MonsterData>,
     actions: Vec<StoredAction>,
+    total_stats: MonsterStats,
     storage_id: u64,
     current_hp: u32,
-    total_damage_taken: u32,
-    total_damage_dealt: u32,
-    total_hp_heal_given: u32,
-    total_hp_heal_received: u32,
-    total_momentum_used: u32,
-    total_energy_used: u32,
-    total_hp_used: u32,
-    total_momentum_generated: u32,
-    total_energy_generated: u32,
-    total_momentum_generated_for_others: u32,
-    total_energy_generated_for_others: u32,
 }
 
 impl HasAssignableId for StoredMonster {
@@ -54,17 +45,7 @@ impl StoredMonster {
             current_hp: data.get_vitality(),
             actions: Vec::new(),
             storage_id: 0,
-            total_damage_dealt: 0,
-            total_damage_taken: 0,
-            total_hp_heal_given: 0,
-            total_hp_heal_received: 0,
-            total_momentum_used: 0,
-            total_energy_used: 0,
-            total_hp_used: 0,
-            total_momentum_generated: 0,
-            total_energy_generated: 0,
-            total_momentum_generated_for_others: 0,
-            total_energy_generated_for_others: 0,
+            total_stats: MonsterStats::default(),
             data,
         }
     }
@@ -76,17 +57,7 @@ impl StoredMonster {
             current_hp: battle_monster.get_current_hp(),
             actions: stored_monster.actions,
             storage_id: stored_monster.storage_id,
-            total_damage_dealt: stored_monster.total_damage_dealt,
-            total_damage_taken: stored_monster.total_damage_taken,
-            total_hp_heal_given: stored_monster.total_hp_heal_given,
-            total_hp_heal_received: stored_monster.total_hp_heal_received,
-            total_momentum_used: stored_monster.total_momentum_used,
-            total_energy_used: stored_monster.total_energy_used,
-            total_hp_used: stored_monster.total_hp_used,
-            total_momentum_generated: stored_monster.total_momentum_generated,
-            total_energy_generated: stored_monster.total_energy_generated,
-            total_momentum_generated_for_others: stored_monster.total_momentum_generated_for_others,
-            total_energy_generated_for_others: stored_monster.total_energy_generated,
+            total_stats: stored_monster.total_stats + battle_monster.get_stats().clone(),
             data: stored_monster.data,
         }
     }
@@ -121,94 +92,6 @@ impl StoredMonster {
 
     pub fn learn_action(&mut self, action: StoredAction) {
         self.actions.push(action);
-    }
-
-    pub fn get_total_momentum_used(&self) -> u32 {
-        self.total_momentum_used
-    }
-
-    pub fn get_total_energy_used(&self) -> u32 {
-        self.total_energy_used
-    }
-
-    pub fn get_total_hp_used(&self) -> u32 {
-        self.total_hp_used
-    }
-
-    pub fn get_total_damage_dealt(&self) -> u32 {
-        self.total_damage_dealt
-    }
-
-    pub fn get_total_damage_taken(&self) -> u32 {
-        self.total_damage_taken
-    }
-
-    pub fn get_total_hp_heal_given(&self) -> u32 {
-        self.total_hp_heal_given
-    }
-
-    pub fn get_total_hp_heal_received(&self) -> u32 {
-        self.total_hp_heal_received
-    }
-
-    pub fn get_total_momentum_generated(&self) -> u32 {
-        self.total_momentum_generated
-    }
-
-    pub fn get_total_energy_generated(&self) -> u32 {
-        self.total_energy_generated
-    }
-
-    pub fn get_total_momentum_generated_for_others(&self) -> u32 {
-        self.total_momentum_generated_for_others
-    }
-
-    pub fn get_total_energy_generated_for_others(&self) -> u32 {
-        self.total_energy_generated_for_others
-    }
-
-    pub fn on_momentum_used(&mut self, amount: u32) {
-        self.total_momentum_used = self.total_momentum_used.saturating_add(amount);
-    }
-
-    pub fn on_energy_used(&mut self, amount: u32) {
-        self.total_energy_used = self.total_energy_used.saturating_add(amount);
-    }
-
-    pub fn on_hp_used(&mut self, amount: u32) {
-        self.total_hp_used = self.total_hp_used.saturating_add(amount);
-    }
-
-    pub fn on_damage_dealt(&mut self, damage: u32) {
-        self.total_damage_dealt = self.total_damage_dealt.saturating_add(damage);
-    }
-
-    pub fn on_damage_taken(&mut self, damage: u32) {
-        self.total_damage_taken = self.total_damage_taken.saturating_add(damage);
-    }
-
-    pub fn on_hp_heal_given(&mut self, hp_healed: u32) {
-        self.total_hp_heal_given = self.total_hp_heal_given.saturating_add(hp_healed);
-    }
-
-    pub fn on_hp_heal_received(&mut self, hp_healed: u32) {
-        self.total_hp_heal_received = self.total_hp_heal_received.saturating_add(hp_healed);
-    }
-
-    pub fn on_momentum_generated(&mut self, momentum: u32) {
-        self.total_momentum_generated = self.total_momentum_generated.saturating_add(momentum);
-    }
-
-    pub fn on_energy_generated(&mut self, energy: u32) {
-        self.total_energy_generated = self.total_energy_generated.saturating_add(energy);
-    }
-
-    pub fn on_momentum_generated_for_others(&mut self, momentum: u32) {
-        self.total_momentum_generated_for_others = self.total_energy_generated_for_others.saturating_add(momentum);
-    }
-
-    pub fn on_energy_generated_for_others(&mut self, energy: u32) {
-        self.total_energy_generated_for_others = self.total_energy_generated_for_others.saturating_add(energy);
     }
 }
 

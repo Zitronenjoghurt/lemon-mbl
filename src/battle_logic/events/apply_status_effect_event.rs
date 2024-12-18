@@ -30,7 +30,7 @@ impl ApplyStatusEffectEventType {
             self.min_turns = self.max_turns;
         }
 
-        let (_, feedback) = state.update_monsters_by_event_target(
+        let (times_applied, feedback) = state.update_monsters_by_event_target_with_accumulator(
             source_team,
             target_team,
             source_index,
@@ -68,9 +68,24 @@ impl ApplyStatusEffectEventType {
                     }
                 };
 
-                Ok(((), vec![feedback]))
+                let counter: u32 = if should_apply { 1 } else { 0 };
+                Ok((counter, vec![feedback]))
             },
         )?;
+
+        if times_applied > 0 {
+            state.update_specific_monster_without_feedback(
+                source_team,
+                source_index,
+                &|m| {
+                    match self.effect {
+                        StatusEffect::Poisoned => m.on_poison_applied(times_applied),
+                        StatusEffect::Paralyzed => m.on_paralysis_applied(times_applied),
+                    };
+                    Ok(())
+                },
+            )?;
+        }
 
         Ok(feedback)
     }

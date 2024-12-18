@@ -44,62 +44,39 @@ fn test_basic_damage_and_heal() {
     let monster_b = battle.get_monster(&TeamSide::TeamB, 0).unwrap();
 
     assert_eq!(monster_a.get_current_hp(), 50);
+    assert_eq!(monster_a.get_momentum(), 5);
+    assert_eq!(monster_a.get_energy(), 12);
     assert_eq!(monster_a.get_action(0).unwrap().get_total_use_count(), 1);
     assert_eq!(monster_a.get_action(1).unwrap().get_total_use_count(), 0);
     assert_eq!(monster_b.get_current_hp(), 15);
+    assert_eq!(monster_b.get_momentum(), 5);
+    assert_eq!(monster_b.get_energy(), 13);
     assert_eq!(monster_b.get_action(0).unwrap().get_total_use_count(), 0);
     assert_eq!(monster_b.get_action(1).unwrap().get_total_use_count(), 1);
 
     // Check stats
-    assert_eq!(monster_a.get_damage_dealt(), 40);
-    assert_eq!(monster_b.get_damage_dealt(), 0);
-    assert_eq!(monster_a.get_damage_taken(), 0);
-    assert_eq!(monster_b.get_damage_taken(), 40);
-    assert_eq!(monster_a.get_hp_heal_given(), 0);
-    assert_eq!(monster_b.get_hp_heal_given(), 5);
-    assert_eq!(monster_a.get_hp_heal_received(), 0);
-    assert_eq!(monster_b.get_hp_heal_received(), 5);
-    assert_eq!(monster_a.get_momentum_used(), 0);
-    assert_eq!(monster_b.get_momentum_used(), 0);
-    assert_eq!(monster_a.get_energy_used(), 3);
-    assert_eq!(monster_b.get_energy_used(), 2);
-    assert_eq!(monster_a.get_hp_used(), 0);
-    assert_eq!(monster_b.get_hp_used(), 0);
-    assert_eq!(monster_a.get_momentum(), 5);
-    assert_eq!(monster_b.get_momentum(), 5);
-    assert_eq!(monster_a.get_energy(), 12);
-    assert_eq!(monster_b.get_energy(), 13);
-    assert_eq!(monster_a.get_momentum_generated(), 5);
-    assert_eq!(monster_b.get_momentum_generated(), 5);
-    assert_eq!(monster_a.get_energy_generated(), 10);
-    assert_eq!(monster_b.get_energy_generated(), 10);
-    assert_eq!(monster_a.get_momentum_generated_for_others(), 5);
-    assert_eq!(monster_b.get_momentum_generated_for_others(), 5);
-    assert_eq!(monster_a.get_energy_generated_for_others(), 0);
-    assert_eq!(monster_b.get_energy_generated_for_others(), 0);
-
-    assert_eq!(monster_a.get_stored_data().get_total_damage_dealt(), 40);
-    assert_eq!(monster_b.get_stored_data().get_total_damage_dealt(), 0);
-    assert_eq!(monster_a.get_stored_data().get_total_damage_taken(), 0);
-    assert_eq!(monster_b.get_stored_data().get_total_damage_taken(), 40);
-    assert_eq!(monster_a.get_stored_data().get_total_hp_heal_given(), 0);
-    assert_eq!(monster_b.get_stored_data().get_total_hp_heal_given(), 5);
-    assert_eq!(monster_a.get_stored_data().get_total_hp_heal_received(), 0);
-    assert_eq!(monster_b.get_stored_data().get_total_hp_heal_received(), 5);
-    assert_eq!(monster_a.get_stored_data().get_total_momentum_used(), 0);
-    assert_eq!(monster_b.get_stored_data().get_total_momentum_used(), 0);
-    assert_eq!(monster_a.get_stored_data().get_total_energy_used(), 3);
-    assert_eq!(monster_b.get_stored_data().get_total_energy_used(), 2);
-    assert_eq!(monster_a.get_stored_data().get_total_hp_used(), 0);
-    assert_eq!(monster_b.get_stored_data().get_total_hp_used(), 0);
-    assert_eq!(monster_a.get_stored_data().get_total_momentum_generated(), 5);
-    assert_eq!(monster_b.get_stored_data().get_total_momentum_generated(), 5);
-    assert_eq!(monster_a.get_stored_data().get_total_energy_generated(), 10);
-    assert_eq!(monster_b.get_stored_data().get_total_energy_generated(), 10);
-    assert_eq!(monster_a.get_stored_data().get_total_momentum_generated_for_others(), 5);
-    assert_eq!(monster_b.get_stored_data().get_total_momentum_generated_for_others(), 5);
-    assert_eq!(monster_a.get_stored_data().get_total_energy_generated_for_others(), 0);
-    assert_eq!(monster_b.get_stored_data().get_total_energy_generated_for_others(), 0);
+    assert_eq!(monster_a.get_stats().damage_dealt, 40);
+    assert_eq!(monster_b.get_stats().damage_dealt, 0);
+    assert_eq!(monster_a.get_stats().damage_taken, 0);
+    assert_eq!(monster_b.get_stats().damage_taken, 40);
+    assert_eq!(monster_a.get_stats().hp_heal_given, 0);
+    assert_eq!(monster_b.get_stats().hp_heal_given, 5);
+    assert_eq!(monster_a.get_stats().hp_heal_received, 0);
+    assert_eq!(monster_b.get_stats().hp_heal_received, 5);
+    assert_eq!(monster_a.get_stats().momentum_used, 0);
+    assert_eq!(monster_b.get_stats().momentum_used, 0);
+    assert_eq!(monster_a.get_stats().energy_used, 3);
+    assert_eq!(monster_b.get_stats().energy_used, 2);
+    assert_eq!(monster_a.get_stats().hp_used, 0);
+    assert_eq!(monster_b.get_stats().hp_used, 0);
+    assert_eq!(monster_a.get_stats().momentum_generated, 5);
+    assert_eq!(monster_b.get_stats().momentum_generated, 5);
+    assert_eq!(monster_a.get_stats().energy_generated, 10);
+    assert_eq!(monster_b.get_stats().energy_generated, 10);
+    assert_eq!(monster_a.get_stats().momentum_generated_for_others, 5);
+    assert_eq!(monster_b.get_stats().momentum_generated_for_others, 5);
+    assert_eq!(monster_a.get_stats().energy_generated_for_others, 0);
+    assert_eq!(monster_b.get_stats().energy_generated_for_others, 0);
 
     // Check battle state save/load
     let mut game_state = GameState::default();
@@ -161,6 +138,14 @@ fn test_poison() {
     assert_eq!(monster_b.get_current_hp(), 30);
     assert_eq!(monster_b.get_action(0).unwrap().get_total_use_count(), 1);
     assert!(!monster_b.has_status_effect(StatusEffect::Poisoned));
+
+    // Check stats
+    assert_eq!(monster_a.get_stats().poison_damage_taken, 15);
+    assert_eq!(monster_b.get_stats().poison_damage_taken, 20);
+    assert_eq!(monster_a.get_stats().times_poison_applied, 2);
+    assert_eq!(monster_b.get_stats().times_poison_applied, 1);
+    assert_eq!(monster_a.get_stats().times_poison_received, 1);
+    assert_eq!(monster_b.get_stats().times_poison_received, 2);
 
     // Check battle state save/load
     let mut game_state = GameState::default();

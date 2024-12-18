@@ -4,6 +4,7 @@ use crate::battle_logic::battle_event_feedback::BattleEventFeedbackEntry;
 use crate::calculations::battle::calculate_poison_damage;
 use crate::calculations::stats::energy_from_potential_and_vigilance;
 use crate::entities::monster_data::MonsterData;
+use crate::entities::monster_stats::MonsterStats;
 use crate::entities::stored_action::StoredAction;
 use crate::entities::stored_monster::StoredMonster;
 use crate::enums::battle_event_feedback_type::BattleEventFeedbackType;
@@ -29,21 +30,11 @@ pub struct BattleMonster {
     storage_data: StoredMonster,
     modifier_flags: HashMap<ModifierFlag, u8>,
     status_effects: HashMap<StatusEffect, u8>,
+    stats: MonsterStats,
     current_hp: u32,
     desperation: u32,
     energy: u32,
     momentum: u32,
-    damage_dealt: u32,
-    damage_taken: u32,
-    hp_heal_given: u32,
-    hp_heal_received: u32,
-    momentum_used: u32,
-    energy_used: u32,
-    hp_used: u32,
-    momentum_generated: u32,
-    energy_generated: u32,
-    momentum_generated_for_others: u32,
-    energy_generated_for_others: u32,
 }
 
 impl BattleMonster {
@@ -60,19 +51,9 @@ impl BattleMonster {
             storage_data: StoredMonster::from_data(data.clone()),
             modifier_flags: HashMap::new(),
             status_effects: HashMap::new(),
+            stats: MonsterStats::default(),
             desperation: 0,
             momentum: 0,
-            damage_dealt: 0,
-            damage_taken: 0,
-            hp_heal_given: 0,
-            hp_heal_received: 0,
-            momentum_used: 0,
-            energy_used: 0,
-            hp_used: 0,
-            momentum_generated: 0,
-            energy_generated: 0,
-            momentum_generated_for_others: 0,
-            energy_generated_for_others: 0,
             energy,
             data,
         }
@@ -87,19 +68,9 @@ impl BattleMonster {
             storage_data: stored_monster,
             modifier_flags: HashMap::new(),
             status_effects: HashMap::new(),
+            stats: MonsterStats::default(),
             desperation: 0,
             momentum: 0,
-            damage_dealt: 0,
-            damage_taken: 0,
-            hp_heal_given: 0,
-            hp_heal_received: 0,
-            momentum_used: 0,
-            energy_used: 0,
-            hp_used: 0,
-            momentum_generated: 0,
-            energy_generated: 0,
-            momentum_generated_for_others: 0,
-            energy_generated_for_others: 0,
             energy,
             data,
         }
@@ -166,6 +137,11 @@ impl BattleMonster {
                 }
             })
             .or_insert(turns);
+
+        match effect {
+            StatusEffect::Poisoned => self.on_poison_received(),
+            StatusEffect::Paralyzed => self.on_paralysis_received()
+        }
     }
 
     /// Returns true if the effect has been removed
@@ -182,6 +158,10 @@ impl BattleMonster {
 
     pub fn remove_status_effect(&mut self, effect: StatusEffect) {
         self.status_effects.remove(&effect);
+    }
+
+    pub fn get_stats(&self) -> &MonsterStats {
+        &self.stats
     }
 
     pub fn get_current_hp(&self) -> u32 {
@@ -218,50 +198,6 @@ impl BattleMonster {
 
     pub fn set_energy(&mut self, energy: u32) {
         self.energy = energy;
-    }
-
-    pub fn get_momentum_used(&self) -> u32 {
-        self.momentum_used
-    }
-
-    pub fn get_energy_used(&self) -> u32 {
-        self.energy_used
-    }
-
-    pub fn get_hp_used(&self) -> u32 {
-        self.hp_used
-    }
-
-    pub fn get_damage_dealt(&self) -> u32 {
-        self.damage_dealt
-    }
-
-    pub fn get_damage_taken(&self) -> u32 {
-        self.damage_taken
-    }
-
-    pub fn get_hp_heal_given(&self) -> u32 {
-        self.hp_heal_given
-    }
-
-    pub fn get_hp_heal_received(&self) -> u32 {
-        self.hp_heal_received
-    }
-
-    pub fn get_momentum_generated(&self) -> u32 {
-        self.momentum_generated
-    }
-
-    pub fn get_energy_generated(&self) -> u32 {
-        self.energy_generated
-    }
-
-    pub fn get_momentum_generated_for_others(&self) -> u32 {
-        self.momentum_generated_for_others
-    }
-
-    pub fn get_energy_generated_for_others(&self) -> u32 {
-        self.energy_generated_for_others
     }
 
     pub fn check_costs(&self, costs: &[BattleEventCost]) -> Result<(), BattleError> {
@@ -392,6 +328,7 @@ impl BattleMonster {
     pub fn process_poison(&mut self, team_side: TeamSide, index: usize) -> BattleEventFeedbackEntry {
         let damage = calculate_poison_damage(self.get_vitality());
         let damage_taken = self.process_flat_damage(damage);
+        self.on_poison_damage_taken(damage_taken);
         BattleEventFeedbackEntry {
             target_team: team_side,
             target_monster_index: index,
@@ -459,58 +396,72 @@ impl BattleMonster {
     }
 
     pub fn on_momentum_used(&mut self, amount: u32) {
-        self.storage_data.on_momentum_used(amount);
-        self.momentum_used = self.momentum_used.saturating_add(amount);
+        self.stats.on_momentum_used(amount);
     }
 
     pub fn on_energy_used(&mut self, amount: u32) {
-        self.storage_data.on_energy_used(amount);
-        self.energy_used = self.energy_used.saturating_add(amount);
+        self.stats.on_energy_used(amount);
     }
 
     pub fn on_hp_used(&mut self, amount: u32) {
-        self.storage_data.on_hp_used(amount);
-        self.hp_used = self.hp_used.saturating_add(amount);
+        self.stats.on_hp_used(amount);
     }
 
     pub fn on_damage_dealt(&mut self, amount: u32) {
-        self.storage_data.on_damage_dealt(amount);
-        self.damage_dealt = self.damage_dealt.saturating_add(amount);
+        self.stats.on_damage_dealt(amount);
     }
 
     pub fn on_damage_taken(&mut self, amount: u32) {
-        self.storage_data.on_damage_taken(amount);
-        self.damage_taken = self.damage_taken.saturating_add(amount);
+        self.stats.on_damage_taken(amount);
     }
 
     pub fn on_hp_heal_given(&mut self, amount: u32) {
-        self.storage_data.on_hp_heal_given(amount);
-        self.hp_heal_given = self.hp_heal_given.saturating_add(amount);
+        self.stats.on_hp_heal_given(amount);
     }
 
     pub fn on_hp_heal_received(&mut self, amount: u32) {
-        self.storage_data.on_hp_heal_received(amount);
-        self.hp_heal_received = self.hp_heal_received.saturating_add(amount);
+        self.stats.on_hp_heal_received(amount);
     }
 
     pub fn on_momentum_generated(&mut self, amount: u32) {
-        self.storage_data.on_momentum_generated(amount);
-        self.momentum_generated = self.momentum_generated.saturating_add(amount);
+        self.stats.on_momentum_generated(amount);
     }
 
     pub fn on_energy_generated(&mut self, amount: u32) {
-        self.storage_data.on_energy_generated(amount);
-        self.energy_generated = self.energy_generated.saturating_add(amount);
+        self.stats.on_energy_generated(amount);
     }
 
     pub fn on_momentum_generated_for_others(&mut self, amount: u32) {
-        self.storage_data.on_momentum_generated_for_others(amount);
-        self.momentum_generated_for_others = self.momentum_generated_for_others.saturating_add(amount);
+        self.stats.on_momentum_generated_for_others(amount);
     }
 
     pub fn on_energy_generated_for_others(&mut self, amount: u32) {
-        self.storage_data.on_energy_generated_for_others(amount);
-        self.energy_generated_for_others = self.energy_generated_for_others.saturating_add(amount);
+        self.stats.on_energy_generated_for_others(amount);
+    }
+
+    pub fn on_poison_damage_taken(&mut self, amount: u32) {
+        self.stats.on_poison_damage_taken(amount);
+    }
+
+    // ToDo: Not connected yet
+    pub fn on_paralyzed_while_trying_to_act(&mut self) {
+        self.stats.on_paralyzed_while_trying_to_act();
+    }
+
+    pub fn on_poison_applied(&mut self, count: u32) {
+        self.stats.on_poison_applied(count);
+    }
+
+    pub fn on_paralysis_applied(&mut self, count: u32) {
+        self.stats.on_paralysis_applied(count);
+    }
+
+    pub fn on_poison_received(&mut self) {
+        self.stats.on_poison_received();
+    }
+
+    pub fn on_paralysis_received(&mut self) {
+        self.stats.on_paralysis_received();
     }
 }
 

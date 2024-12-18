@@ -34,3 +34,15 @@ flow:
   potential_targets:
     - OneSelf
   priority: 200
+poison_fang:
+  id: 3
+  event_types:
+    - ApplyStatusEffect:
+        effect: Poisoned
+        chance: 10000
+        min_turns: 3
+        max_turns: 3
+        target: TargetMonster
+  potential_targets:
+    - SpecificOpponent
+  priority: 100

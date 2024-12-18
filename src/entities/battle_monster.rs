@@ -1,11 +1,11 @@
 use crate::battle_logic::battle_error::BattleError;
 use crate::battle_logic::battle_event_cost::BattleEventCost;
 use crate::battle_logic::battle_event_feedback::BattleEventFeedbackEntry;
+use crate::calculations::battle::calculate_poison_damage;
 use crate::calculations::stats::energy_from_potential_and_vigilance;
 use crate::entities::monster_data::MonsterData;
 use crate::entities::stored_action::StoredAction;
 use crate::entities::stored_monster::StoredMonster;
-use crate::enums::battle_event_feedback_text::BattleEventFeedbackText;
 use crate::enums::battle_event_feedback_type::BattleEventFeedbackType;
 use crate::enums::damage_type::DamageType;
 use crate::enums::modifier_flag::ModifierFlag;
@@ -13,6 +13,7 @@ use crate::enums::monster_elemental_type::MonsterElementalType;
 use crate::enums::monster_flag::MonsterFlag;
 use crate::enums::monster_physical_type::MonsterPhysicalType;
 use crate::enums::resource_type::ResourceType;
+use crate::enums::status_effect::StatusEffect;
 use crate::enums::team_side::TeamSide;
 use crate::get_game_data;
 use crate::serialization::arc_ref;
@@ -27,6 +28,7 @@ pub struct BattleMonster {
     data: Arc<MonsterData>,
     storage_data: StoredMonster,
     modifier_flags: HashMap<ModifierFlag, u8>,
+    status_effects: HashMap<StatusEffect, u8>,
     current_hp: u32,
     desperation: u32,
     energy: u32,
@@ -57,6 +59,7 @@ impl BattleMonster {
             current_hp: data.get_vitality(),
             storage_data: StoredMonster::from_data(data.clone()),
             modifier_flags: HashMap::new(),
+            status_effects: HashMap::new(),
             desperation: 0,
             momentum: 0,
             damage_dealt: 0,
@@ -83,6 +86,7 @@ impl BattleMonster {
             current_hp: stored_monster.get_current_hp(),
             storage_data: stored_monster,
             modifier_flags: HashMap::new(),
+            status_effects: HashMap::new(),
             desperation: 0,
             momentum: 0,
             damage_dealt: 0,
@@ -143,6 +147,41 @@ impl BattleMonster {
                 self.modifier_flags.remove(&flag);
             }
         }
+    }
+
+    pub fn get_status_effects(&self) -> &HashMap<StatusEffect, u8> {
+        &self.status_effects
+    }
+
+    pub fn has_status_effect(&self, effect: StatusEffect) -> bool {
+        self.status_effects.contains_key(&effect)
+    }
+
+    pub fn add_status_effect(&mut self, effect: StatusEffect, turns: u8) {
+        self.status_effects
+            .entry(effect)
+            .and_modify(|existing_turns| {
+                if turns > *existing_turns {
+                    *existing_turns = turns;
+                }
+            })
+            .or_insert(turns);
+    }
+
+    /// Returns true if the effect has been removed
+    pub fn tick_status_effect(&mut self, effect: StatusEffect) -> bool {
+        if let Some(turns_left) = self.status_effects.get_mut(&effect) {
+            *turns_left = turns_left.saturating_sub(1);
+            if *turns_left == 0 {
+                self.remove_status_effect(effect);
+                return true;
+            }
+        }
+        false
+    }
+
+    pub fn remove_status_effect(&mut self, effect: StatusEffect) {
+        self.status_effects.remove(&effect);
     }
 
     pub fn get_current_hp(&self) -> u32 {
@@ -285,6 +324,15 @@ impl BattleMonster {
         Ok(())
     }
 
+    pub fn process_flat_damage(&mut self, amount: u32) -> u32 {
+        let initial_hp = self.current_hp;
+        self.current_hp = self.current_hp.saturating_sub(amount);
+
+        let damage_taken = initial_hp - self.current_hp;
+        self.on_damage_taken(damage_taken);
+        damage_taken
+    }
+
     pub fn process_damage(&mut self, amount: u32, damage_types: &[DamageType]) -> (u32, f64) {
         let damage_factor = get_game_data().damage_types.calculate_damage_factor(
             damage_types,
@@ -295,12 +343,8 @@ impl BattleMonster {
         let modified_amount = (amount as f64 * damage_factor)
             .round()
             .clamp(0.0, u32::MAX as f64) as u32;
+        let damage_taken = self.process_flat_damage(modified_amount);
 
-        let initial_hp = self.current_hp;
-        self.current_hp = self.current_hp.saturating_sub(modified_amount);
-
-        let damage_taken = initial_hp - self.current_hp;
-        self.on_damage_taken(damage_taken);
         (damage_taken, damage_factor)
     }
 
@@ -345,6 +389,47 @@ impl BattleMonster {
         }
     }
 
+    pub fn process_poison(&mut self, team_side: TeamSide, index: usize) -> BattleEventFeedbackEntry {
+        let damage = calculate_poison_damage(self.get_vitality());
+        let damage_taken = self.process_flat_damage(damage);
+        BattleEventFeedbackEntry {
+            target_team: team_side,
+            target_monster_index: index,
+            feedback_type: BattleEventFeedbackType::PoisonDamageTaken,
+            value: Some(damage_taken as i64),
+            factor: None,
+        }
+    }
+
+    pub fn process_status_effect(&mut self, status_effect: StatusEffect, team_side: TeamSide, index: usize) -> Vec<BattleEventFeedbackEntry> {
+        let mut effect_feedback = match status_effect {
+            StatusEffect::Poisoned => {
+                let feedback = self.process_poison(team_side, index);
+                vec![feedback]
+            }
+            _ => Vec::new(),
+        };
+
+        let effect_removed = self.tick_status_effect(status_effect);
+        if effect_removed {
+            effect_feedback.push(BattleEventFeedbackEntry {
+                target_team: team_side,
+                target_monster_index: index,
+                feedback_type: status_effect.get_expired_feedback_type(),
+                value: None,
+                factor: None,
+            })
+        };
+        effect_feedback
+    }
+
+    pub fn process_status_effects(&mut self, team_side: TeamSide, index: usize) -> Vec<BattleEventFeedbackEntry> {
+        let effects: Vec<StatusEffect> = self.status_effects.keys().into_iter().copied().collect();
+        effects.into_iter()
+            .flat_map(|effect| self.process_status_effect(effect, team_side, index))
+            .collect()
+    }
+
     pub fn on_turn_end(&mut self, team: TeamSide, index: usize) -> Vec<BattleEventFeedbackEntry> {
         let mut feedback_entries = Vec::new();
 
@@ -355,12 +440,14 @@ impl BattleMonster {
                     target_team: team,
                     target_monster_index: index,
                     feedback_type: BattleEventFeedbackType::MomentumGeneratedEnergy,
-                    feedback_text: BattleEventFeedbackText::MomentumGeneratedEnergy,
                     value: Some(energy_generated as i64),
                     factor: None,
                 }
             )
         };
+
+        let status_effect_feedback = self.process_status_effects(team, index);
+        feedback_entries.extend(status_effect_feedback);
 
         feedback_entries
     }

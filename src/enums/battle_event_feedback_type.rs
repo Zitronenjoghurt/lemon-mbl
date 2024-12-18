@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Serialize, Deserialize)]
-#[repr(u8)]
+#[repr(u16)]
 pub enum BattleEventFeedbackType {
     RawDamageTaken = 0,
     RawDamageDealt = 1,
@@ -15,4 +15,16 @@ pub enum BattleEventFeedbackType {
     MomentumGiven = 9,
     EnergyGiven = 10,
     MomentumGeneratedEnergy = 11,
+    PoisonApplied = 12,
+    ParalysisApplied = 13,
+    PoisonMissed = 14,
+    ParalysisMissed = 15,
+    PoisonAlreadyApplied = 16,
+    ParalysisAlreadyApplied = 17,
+    PoisonDamageTaken = 18,
+    ParalyzedCantAttack = 19,
+    PoisonExpired = 20,
+    ParalysisExpired = 21,
+    PoisonExtended = 22,
+    ParalysisExtended = 23,
 }

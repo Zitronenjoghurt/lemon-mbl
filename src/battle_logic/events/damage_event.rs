@@ -1,7 +1,6 @@
 use crate::battle_logic::battle_error::BattleError;
 use crate::battle_logic::battle_event_feedback::BattleEventFeedbackEntry;
 use crate::battle_logic::battle_state::BattleState;
-use crate::enums::battle_event_feedback_text::BattleEventFeedbackText;
 use crate::enums::battle_event_feedback_type::BattleEventFeedbackType;
 use crate::enums::damage_type::DamageType;
 use crate::enums::event_target::EventTarget;
@@ -36,7 +35,6 @@ impl DamageEventType {
                     target_team,
                     target_monster_index: target_index,
                     feedback_type: BattleEventFeedbackType::RawDamageTaken,
-                    feedback_text: BattleEventFeedbackText::DamageTaken,
                     value: Some(damage as i64),
                     factor: Some(damage_factor),
                 };
@@ -53,7 +51,6 @@ impl DamageEventType {
                     target_team: source_team,
                     target_monster_index: source_index,
                     feedback_type: BattleEventFeedbackType::RawDamageDealt,
-                    feedback_text: BattleEventFeedbackText::DamageDealt,
                     value: Some(damage_dealt_cumulative as i64),
                     factor: None,
                 };

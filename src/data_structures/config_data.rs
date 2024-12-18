@@ -6,10 +6,17 @@ use std::fs;
 pub struct ConfigData {
     #[serde(default = "default_maximum_damage_factor")]
     pub maximum_damage_factor: f64,
+    /// Percentage of the monsters max HP lost every turn (normalized)
+    #[serde(default = "default_poison_damage_factor")]
+    pub poison_damage_per_turn: f64,
 }
 
 fn default_maximum_damage_factor() -> f64 {
     16.0
+}
+
+fn default_poison_damage_factor() -> f64 {
+    0.1
 }
 
 impl ConfigData {

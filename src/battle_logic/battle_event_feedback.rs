@@ -1,4 +1,3 @@
-use crate::enums::battle_event_feedback_text::BattleEventFeedbackText;
 use crate::enums::battle_event_feedback_type::BattleEventFeedbackType;
 use crate::enums::team_side::TeamSide;
 use serde::{Deserialize, Serialize};
@@ -16,7 +15,6 @@ pub struct BattleEventFeedbackEntry {
     pub target_team: TeamSide,
     pub target_monster_index: usize,
     pub feedback_type: BattleEventFeedbackType,
-    pub feedback_text: BattleEventFeedbackText,
     pub value: Option<i64>,
     pub factor: Option<f64>,
 }

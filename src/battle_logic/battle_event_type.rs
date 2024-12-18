@@ -1,6 +1,7 @@
 use crate::battle_logic::battle_error::BattleError;
 use crate::battle_logic::battle_event_feedback::BattleEventFeedbackEntry;
 use crate::battle_logic::battle_state::BattleState;
+use crate::battle_logic::events::apply_status_effect_event::ApplyStatusEffectEventType;
 use crate::battle_logic::events::damage_event::DamageEventType;
 use crate::battle_logic::events::generate_resource_event::GenerateResourceEventType;
 use crate::battle_logic::events::heal_event::HealEventType;
@@ -16,6 +17,7 @@ pub enum BattleEventType {
     Damage(DamageEventType) = 0,
     Heal(HealEventType) = 1,
     GenerateResource(GenerateResourceEventType) = 2,
+    ApplyStatusEffect(ApplyStatusEffectEventType) = 3,
 }
 
 impl BattleEventType {
@@ -24,6 +26,7 @@ impl BattleEventType {
             "Damage".to_string(),
             "Heal".to_string(),
             "GenerateResource".to_string(),
+            "ApplyStatusEffect".to_string(),
         ]
     }
 
@@ -36,9 +39,10 @@ impl BattleEventType {
         target_index: usize,
     ) -> Result<Vec<BattleEventFeedbackEntry>, BattleError> {
         match self {
-            Self::Damage(damage_event_type) => { damage_event_type.process(state, source_team, target_team, source_index, target_index) }
-            Self::Heal(heal_event_type) => { heal_event_type.process(state, source_team, target_team, source_index, target_index) }
-            Self::GenerateResource(resource_event_type) => { resource_event_type.process(state, source_team, target_team, source_index, target_index) }
+            Self::Damage(event) => { event.process(state, source_team, target_team, source_index, target_index) }
+            Self::Heal(event) => { event.process(state, source_team, target_team, source_index, target_index) }
+            Self::GenerateResource(event) => { event.process(state, source_team, target_team, source_index, target_index) }
+            Self::ApplyStatusEffect(event) => { event.process(state, source_team, target_team, source_index, target_index) }
         }
     }
 
@@ -47,6 +51,7 @@ impl BattleEventType {
             Self::Damage(event) => Some(event.amount),
             Self::Heal(event) => Some(event.amount),
             Self::GenerateResource(event) => Some(event.amount),
+            _ => None,
         }
     }
 
@@ -55,6 +60,7 @@ impl BattleEventType {
             Self::Damage(event) => Some(event.target),
             Self::Heal(event) => Some(event.target),
             Self::GenerateResource(event) => Some(event.target),
+            Self::ApplyStatusEffect(event) => Some(event.target),
         }
     }
 

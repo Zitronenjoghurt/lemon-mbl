@@ -1,7 +1,6 @@
 use crate::battle_logic::battle_error::BattleError;
 use crate::battle_logic::battle_event_feedback::BattleEventFeedbackEntry;
 use crate::battle_logic::battle_state::BattleState;
-use crate::enums::battle_event_feedback_text::BattleEventFeedbackText;
 use crate::enums::battle_event_feedback_type::BattleEventFeedbackType;
 use crate::enums::event_target::EventTarget;
 use crate::enums::team_side::TeamSide;
@@ -34,7 +33,6 @@ impl HealEventType {
                     target_team,
                     target_monster_index: target_index,
                     feedback_type: BattleEventFeedbackType::HpHealReceived,
-                    feedback_text: BattleEventFeedbackText::HpHealReceived,
                     value: Some(hp_healed as i64),
                     factor: None,
                 };
@@ -51,7 +49,6 @@ impl HealEventType {
                     target_team: source_team,
                     target_monster_index: source_index,
                     feedback_type: BattleEventFeedbackType::HpHealGiven,
-                    feedback_text: BattleEventFeedbackText::HpHealGiven,
                     value: Some(hp_healed_cumulative as i64),
                     factor: None,
                 };

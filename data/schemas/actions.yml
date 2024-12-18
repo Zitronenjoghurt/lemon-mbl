@@ -70,6 +70,30 @@ patternProperties:
                       maximum: 65535
                     target:
                       $ref: '#/definitions/eventTarget'
+            - type: object
+              required: [ ApplyStatusEffect ]
+              properties:
+                ApplyStatusEffect:
+                  type: object
+                  required: [ effect, ]
+                  properties:
+                    effect:
+                      $ref: '#/definitions/statusEffect'
+                    chance:
+                      type: integer
+                      minimum: 0
+                      maximum: 10000
+                      description: 10000 = 100%, 5000 = 50%, etc.
+                    target:
+                      $ref: '#/definitions/eventTarget'
+                    min_turns:
+                      type: integer
+                      minimum: 0
+                      maximum: 255
+                    max_turns:
+                      type: integer
+                      minimum: 0
+                      maximum: 255
       potential_targets:
         type: array
         items:
@@ -123,3 +147,8 @@ definitions:
       - Momentum
       - Energy
       - Hp
+  statusEffect:
+    type: string
+    enum:
+      - Poisoned
+      - Paralyzed

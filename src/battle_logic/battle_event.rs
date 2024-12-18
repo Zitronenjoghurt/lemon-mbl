@@ -83,7 +83,6 @@ impl BattleEvent {
                         target_team: self.source_team,
                         target_monster_index: self.source_monster_index,
                         feedback_type: cost.resource.get_used_feedback_type(),
-                        feedback_text: cost.resource.get_used_feedback_text(),
                         value: Some(cost.amount as i64),
                         factor: None,
                     };

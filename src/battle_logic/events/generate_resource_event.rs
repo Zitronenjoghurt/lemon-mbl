@@ -34,7 +34,6 @@ impl GenerateResourceEventType {
                     target_team,
                     target_monster_index: target_index,
                     feedback_type: self.resource.get_generation_received_feedback_type(),
-                    feedback_text: self.resource.get_generation_received_feedback_text(),
                     value: Some(amount_generated as i64),
                     factor: None,
                 };
@@ -55,7 +54,6 @@ impl GenerateResourceEventType {
                     target_team: source_team,
                     target_monster_index: source_index,
                     feedback_type: self.resource.get_generation_given_feedback_type(),
-                    feedback_text: self.resource.get_generation_given_feedback_text(),
                     value: Some(amount_generated_cumulative as i64),
                     factor: None,
                 };

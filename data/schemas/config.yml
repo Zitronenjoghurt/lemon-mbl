@@ -8,4 +8,9 @@ properties:
     description: Maximum damage factor applied on damage by type resonance
     minimum: 0.0
     maximum: 1.7976931348623157e+308
+  poison_damage_per_turn:
+    type: number
+    description: Percentage of the monsters max HP lost every turn (normalized).
+    minimum: 0.0
+    maximum: 1.0
 additionalProperties: false

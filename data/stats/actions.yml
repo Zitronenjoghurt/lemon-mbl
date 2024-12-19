@@ -24,7 +24,7 @@ test_heal:
   costs:
     - resource: Energy
       amount: 2
-flow:
+test_momentum:
   id: 2
   event_types:
     - GenerateResource:
@@ -34,7 +34,7 @@ flow:
   potential_targets:
     - OneSelf
   priority: 200
-poison_fang:
+test_poison:
   id: 3
   event_types:
     - ApplyStatusEffect:
@@ -42,6 +42,18 @@ poison_fang:
         chance: 10000
         min_turns: 3
         max_turns: 3
+        target: TargetMonster
+  potential_targets:
+    - SpecificOpponent
+  priority: 100
+test_paralysis:
+  id: 4
+  event_types:
+    - ApplyStatusEffect:
+        effect: Paralyzed
+        chance: 10000
+        min_turns: 2
+        max_turns: 2
         target: TargetMonster
   potential_targets:
     - SpecificOpponent

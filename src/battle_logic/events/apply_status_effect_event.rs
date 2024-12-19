@@ -36,14 +36,14 @@ impl ApplyStatusEffectEventType {
             source_index,
             target_index,
             self.target,
-            |m| {
+            |monster| {
                 let should_apply = self.chance.roll();
 
                 let feedback = if should_apply {
                     let turns = thread_rng().gen_range(self.min_turns..=self.max_turns);
-                    let already_had_effect = m.has_status_effect(self.effect);
+                    let already_had_effect = monster.has_status_effect(self.effect);
 
-                    m.add_status_effect(self.effect, turns);
+                    monster.add_status_effect(self.effect, turns);
 
                     let feedback_type = if already_had_effect {
                         self.effect.get_extended_feedback_type()
@@ -77,10 +77,10 @@ impl ApplyStatusEffectEventType {
             state.update_specific_monster_without_feedback(
                 source_team,
                 source_index,
-                &|m| {
+                &|monster| {
                     match self.effect {
-                        StatusEffect::Poisoned => m.on_poison_applied(times_applied),
-                        StatusEffect::Paralyzed => m.on_paralysis_applied(times_applied),
+                        StatusEffect::Poisoned => monster.on_poison_applied(times_applied),
+                        StatusEffect::Paralyzed => monster.on_paralysis_applied(times_applied),
                     };
                     Ok(())
                 },

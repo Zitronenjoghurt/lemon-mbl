@@ -361,10 +361,28 @@ impl BattleMonster {
     }
 
     pub fn process_status_effects(&mut self, team_side: TeamSide, index: usize) -> Vec<BattleEventFeedbackEntry> {
-        let effects: Vec<StatusEffect> = self.status_effects.keys().into_iter().copied().collect();
+        let effects: Vec<StatusEffect> = self.status_effects.keys().copied().collect();
         effects.into_iter()
             .flat_map(|effect| self.process_status_effect(effect, team_side, index))
             .collect()
+    }
+
+    pub fn process_try_act(&mut self, team_side: TeamSide, index: usize, action_index: usize) -> Option<Vec<BattleEventFeedbackEntry>> {
+        if self.has_status_effect(StatusEffect::Paralyzed) {
+            let cant_move = get_game_data().config.paralysis_stun_chance.roll();
+            if cant_move {
+                let feedback = BattleEventFeedbackEntry {
+                    target_team: team_side,
+                    target_monster_index: index,
+                    feedback_type: BattleEventFeedbackType::ParalyzedCantAct,
+                    value: None,
+                    factor: None,
+                };
+                self.on_paralyzed_while_trying_to_act();
+                return Some(vec![feedback]);
+            }
+        }
+        None
     }
 
     pub fn on_turn_end(&mut self, team: TeamSide, index: usize) -> Vec<BattleEventFeedbackEntry> {
@@ -443,7 +461,6 @@ impl BattleMonster {
         self.stats.on_poison_damage_taken(amount);
     }
 
-    // ToDo: Not connected yet
     pub fn on_paralyzed_while_trying_to_act(&mut self) {
         self.stats.on_paralyzed_while_trying_to_act();
     }

@@ -5,6 +5,7 @@ use crate::battle_logic::battle_event_type::BattleEventType;
 use crate::battle_logic::battle_log::BattleLogActionEntry;
 use crate::battle_logic::battle_state::BattleState;
 use crate::entities::stored_action::StoredAction;
+use crate::enums::battle_event_feedback_source_type::BattleEventFeedbackSourceType;
 use crate::enums::team_side::TeamSide;
 use crate::traits::action_data_access::ActionDataAccess;
 use serde::{Deserialize, Serialize};
@@ -34,6 +35,7 @@ impl BattleEvent {
         target_monster_index: usize,
     ) -> Self {
         let feedback_source = BattleEventFeedbackSource {
+            source_type: BattleEventFeedbackSourceType::Action,
             source_team: Some(*source_team),
             source_monster_index: Some(source_monster_index),
             action_id: Some(action.get_id()),
@@ -77,8 +79,8 @@ impl BattleEvent {
             let (_, feedback) = state.update_specific_monster(
                 self.source_team,
                 self.source_monster_index,
-                &|m| {
-                    m.process_cost(cost)?;
+                &|monster| {
+                    monster.process_cost(cost)?;
                     let feedback_entry = BattleEventFeedbackEntry {
                         target_team: self.source_team,
                         target_monster_index: self.source_monster_index,
@@ -131,18 +133,37 @@ impl BattleEvent {
     pub fn process(&mut self, state: &mut BattleState) -> Result<BattleEventFeedback, BattleError> {
         self.check_costs(state)?;
 
+        if let Some(action_index) = self.action_index {
+            let wont_move_feedback = state.update_specific_monster_without_feedback(
+                self.source_team,
+                self.source_monster_index,
+                &|monster| Ok(monster.process_try_act(self.source_team, self.source_monster_index, action_index)),
+            )?;
+            if let Some(feedback) = wont_move_feedback {
+                self.types.clear();
+                return Ok(BattleEventFeedback {
+                    source: self.feedback_source.clone(),
+                    entries: vec![feedback],
+                });
+            }
+        }
+
         let cost_feedback_entries = self.process_costs(state)?;
         let type_feedback_entries = self.process_event_types(state)?;
 
         let mut feedback_entries: Vec<Vec<BattleEventFeedbackEntry>> = Vec::new();
-        feedback_entries.push(cost_feedback_entries);
-        feedback_entries.extend(type_feedback_entries);
+        if !cost_feedback_entries.is_empty() {
+            feedback_entries.push(cost_feedback_entries);
+        }
+        if !type_feedback_entries.is_empty() {
+            feedback_entries.extend(type_feedback_entries);
+        }
 
         if let Some(action_index) = self.action_index {
             state.update_specific_monster_without_feedback(
                 self.source_team,
                 self.source_monster_index,
-                &|m| m.on_action_used(action_index),
+                &|monster| monster.on_action_used(action_index),
             )?;
         }
 

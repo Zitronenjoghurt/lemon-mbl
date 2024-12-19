@@ -22,7 +22,7 @@ pub enum BattleEventFeedbackType {
     PoisonAlreadyApplied = 16,
     ParalysisAlreadyApplied = 17,
     PoisonDamageTaken = 18,
-    ParalyzedCantAttack = 19,
+    ParalyzedCantAct = 19,
     PoisonExpired = 20,
     ParalysisExpired = 21,
     PoisonExtended = 22,

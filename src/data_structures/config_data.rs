@@ -1,3 +1,4 @@
+use crate::calculations::int_bps::IntBps;
 use crate::utils::directories::config_data_path;
 use serde::{Deserialize, Serialize};
 use std::fs;
@@ -9,6 +10,8 @@ pub struct ConfigData {
     /// Percentage of the monsters max HP lost every turn (normalized)
     #[serde(default = "default_poison_damage_factor")]
     pub poison_damage_per_turn: f64,
+    #[serde(default = "default_paralysis_stun_chance")]
+    pub paralysis_stun_chance: IntBps,
 }
 
 fn default_maximum_damage_factor() -> f64 {
@@ -17,6 +20,10 @@ fn default_maximum_damage_factor() -> f64 {
 
 fn default_poison_damage_factor() -> f64 {
     0.1
+}
+
+fn default_paralysis_stun_chance() -> IntBps {
+    IntBps(5000)
 }
 
 impl ConfigData {

@@ -13,4 +13,9 @@ properties:
     description: Percentage of the monsters max HP lost every turn (normalized).
     minimum: 0.0
     maximum: 1.0
+  paralysis_stun_chance:
+    type: number
+    description: 10000 = 100%, 5000 = 50%, etc.
+    minimum: 0
+    maximum: 10000
 additionalProperties: false

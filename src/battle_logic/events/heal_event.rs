@@ -27,8 +27,8 @@ impl HealEventType {
             source_index,
             target_index,
             self.target,
-            |m| {
-                let hp_healed = m.process_heal(self.amount);
+            |monster| {
+                let hp_healed = monster.process_heal(self.amount);
                 let feedback_entry = BattleEventFeedbackEntry {
                     target_team,
                     target_monster_index: target_index,
@@ -43,8 +43,8 @@ impl HealEventType {
         let (_, source_monster_feedback) = state.update_specific_monster(
             source_team,
             source_index,
-            &|m| {
-                m.on_hp_heal_given(hp_healed_cumulative);
+            &|monster| {
+                monster.on_hp_heal_given(hp_healed_cumulative);
                 let feedback_entry = BattleEventFeedbackEntry {
                     target_team: source_team,
                     target_monster_index: source_index,

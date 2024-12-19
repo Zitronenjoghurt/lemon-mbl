@@ -28,8 +28,8 @@ impl GenerateResourceEventType {
             source_index,
             target_index,
             self.target,
-            |m| {
-                let amount_generated = m.process_resource_generation(self.resource, self.amount);
+            |monster| {
+                let amount_generated = monster.process_resource_generation(self.resource, self.amount);
                 let feedback_entry = BattleEventFeedbackEntry {
                     target_team,
                     target_monster_index: target_index,
@@ -44,11 +44,11 @@ impl GenerateResourceEventType {
         let (_, source_monster_feedback) = state.update_specific_monster(
             source_team,
             source_index,
-            &|m| {
+            &|monster| {
                 match self.resource {
-                    ResourceType::Momentum => m.on_momentum_generated_for_others(amount_generated_cumulative),
-                    ResourceType::Energy => m.on_energy_generated_for_others(amount_generated_cumulative),
-                    ResourceType::Hp => m.on_hp_heal_given(amount_generated_cumulative),
+                    ResourceType::Momentum => monster.on_momentum_generated_for_others(amount_generated_cumulative),
+                    ResourceType::Energy => monster.on_energy_generated_for_others(amount_generated_cumulative),
+                    ResourceType::Hp => monster.on_hp_heal_given(amount_generated_cumulative),
                 }
                 let feedback_entry = BattleEventFeedbackEntry {
                     target_team: source_team,

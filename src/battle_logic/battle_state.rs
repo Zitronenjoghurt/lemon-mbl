@@ -104,12 +104,17 @@ impl BattleState {
 
     pub fn process_event_queue(&mut self) -> Result<(), BattleError> {
         let mut feedback = Vec::new();
+        let mut requeued_events = Vec::new();
 
         while let Some(mut event) = self.event_queue.pop() {
             feedback.push(event.process(self)?);
             if !event.should_remove() {
-                self.event_queue.push(event);
+                requeued_events.push(event);
             }
+        }
+
+        for event in requeued_events {
+            self.event_queue.push(event);
         }
 
         let mut turn_end_feedback_entries = Vec::new();
@@ -119,7 +124,7 @@ impl BattleState {
         turn_end_feedback_entries.extend(entries_1);
         turn_end_feedback_entries.extend(entries_2);
         let turn_end_feedback = BattleEventFeedback {
-            source: BattleEventFeedbackSource::default(),
+            source: BattleEventFeedbackSource::default_for_turn_end(),
             entries: turn_end_feedback_entries,
         };
         feedback.push(turn_end_feedback);
@@ -181,8 +186,8 @@ impl BattleState {
             target_monster_index,
         )?;
 
-        if let Some(entry) = event.get_log_action_entry() { self.current_turn_action_log.push(entry); }
 
+        if let Some(entry) = event.get_log_action_entry() { self.current_turn_action_log.push(entry); }
         self.queue_event(event);
         self.add_monster_to_moved(source_team, source_monster_index);
         Ok(())
@@ -214,6 +219,28 @@ impl BattleState {
             source_monster_index,
             target_monster_index,
         ))
+    }
+
+    pub fn get_from_specific_monster<F, R>(&self, target_team: TeamSide, index: usize, get_fn: F) -> Result<R, BattleError>
+    where
+        F: Fn(&BattleMonster) -> R,
+    {
+        match target_team {
+            TeamSide::TeamA => {
+                if let Some(monster) = self.monsters_a.get(index) {
+                    Ok(get_fn(monster))
+                } else {
+                    Err(BattleError::InvalidMonsterIndex)
+                }
+            }
+            TeamSide::TeamB => {
+                if let Some(monster) = self.monsters_b.get(index) {
+                    Ok(get_fn(monster))
+                } else {
+                    Err(BattleError::InvalidMonsterIndex)
+                }
+            }
+        }
     }
 
     pub fn update_specific_monster_without_feedback<F, R>(&mut self, target_team: TeamSide, index: usize, update_fn: &F) -> Result<R, BattleError>

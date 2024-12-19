@@ -164,3 +164,64 @@ fn test_poison() {
 
     assert_eq!(game_state, loaded_bin);
 }
+
+#[test]
+fn test_paralysis() {
+    let mut monster_a = StoredMonster::create(0).unwrap();
+    let mut monster_b = StoredMonster::create(0).unwrap();
+
+    let test_paralysis = StoredAction::create(4).unwrap();
+    monster_a.learn_action(test_paralysis.clone());
+    monster_b.learn_action(test_paralysis);
+
+    let battle_monster_a = BattleMonster::from(monster_a);
+    let battle_monster_b = BattleMonster::from(monster_b);
+
+    let team_a = [battle_monster_a];
+    let team_b = [battle_monster_b];
+
+    let mut battle = BattleState::new(Vec::from(team_a), Vec::from(team_b));
+    battle.take_action(0, &TeamSide::TeamA, &TeamSide::TeamB, 0, 0).unwrap();
+    battle.take_action(0, &TeamSide::TeamB, &TeamSide::TeamA, 0, 0).unwrap();
+    battle.process_event_queue().unwrap();
+    let monster_a = battle.get_monster(&TeamSide::TeamA, 0).unwrap();
+    let monster_b = battle.get_monster(&TeamSide::TeamB, 0).unwrap();
+    assert!(monster_a.has_status_effect(StatusEffect::Paralyzed));
+    assert_eq!(monster_a.get_action(0).unwrap().get_total_use_count(), 0);
+    assert!(!monster_b.has_status_effect(StatusEffect::Paralyzed));
+    assert_eq!(monster_b.get_action(0).unwrap().get_total_use_count(), 1);
+
+    battle.take_action(0, &TeamSide::TeamA, &TeamSide::TeamB, 0, 0).unwrap();
+    battle.process_event_queue().unwrap();
+    let monster_a = battle.get_monster(&TeamSide::TeamA, 0).unwrap();
+    let monster_b = battle.get_monster(&TeamSide::TeamB, 0).unwrap();
+    assert!(!monster_a.has_status_effect(StatusEffect::Paralyzed));
+    assert_eq!(monster_a.get_action(0).unwrap().get_total_use_count(), 0);
+    assert!(!monster_b.has_status_effect(StatusEffect::Paralyzed));
+    assert_eq!(monster_b.get_action(0).unwrap().get_total_use_count(), 1);
+
+    // Check stats
+    assert_eq!(monster_a.get_stats().times_paralyzed_while_trying_to_act, 2);
+    assert_eq!(monster_b.get_stats().times_paralyzed_while_trying_to_act, 0);
+    assert_eq!(monster_a.get_stats().times_paralysis_applied, 0);
+    assert_eq!(monster_b.get_stats().times_paralysis_applied, 1);
+    assert_eq!(monster_a.get_stats().times_paralysis_received, 1);
+    assert_eq!(monster_b.get_stats().times_paralysis_received, 0);
+
+    // Check battle state save/load
+    let mut game_state = GameState::default();
+    let test_path = PathBuf::from("./test_data");
+    let bin_path = test_path.join("save_with_paralysis.bin");
+    let yaml_path = test_path.join("save_with_paralysis.yaml");
+    let yaml_path2 = test_path.join("save_with_paralysis_2.yaml");
+    let json_path = test_path.join("save_with_paralysis.json");
+    game_state.set_current_battle(Some(battle));
+    game_state.save(&bin_path, SaveFileMode::Bin).unwrap();
+    game_state.save(&yaml_path, SaveFileMode::Yaml).unwrap();
+    game_state.save(&json_path, SaveFileMode::Json).unwrap();
+
+    let loaded_bin = GameState::load(&bin_path).unwrap();
+    loaded_bin.save(&yaml_path2, SaveFileMode::Yaml).unwrap();
+
+    assert_eq!(game_state, loaded_bin);
+}

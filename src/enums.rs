@@ -11,3 +11,4 @@ pub mod battle_event_feedback_type;
 pub mod resource_type;
 pub mod modifier_flag;
 pub mod status_effect;
+pub mod battle_event_feedback_source_type;

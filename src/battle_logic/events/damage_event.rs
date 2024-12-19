@@ -29,8 +29,8 @@ impl DamageEventType {
             source_index,
             target_index,
             self.target,
-            |m| {
-                let (damage, damage_factor) = m.process_damage(self.amount, &self.damage_types);
+            |monster| {
+                let (damage, damage_factor) = monster.process_damage(self.amount, &self.damage_types);
                 let feedback_entry = BattleEventFeedbackEntry {
                     target_team,
                     target_monster_index: target_index,
@@ -45,8 +45,8 @@ impl DamageEventType {
         let (_, source_monster_feedback) = state.update_specific_monster(
             source_team,
             source_index,
-            &|m| {
-                m.on_damage_dealt(damage_dealt_cumulative);
+            &|monster| {
+                monster.on_damage_dealt(damage_dealt_cumulative);
                 let feedback_entry = BattleEventFeedbackEntry {
                     target_team: source_team,
                     target_monster_index: source_index,

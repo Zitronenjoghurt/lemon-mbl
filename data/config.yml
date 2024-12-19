@@ -1,2 +1,3 @@
 maximum_damage_factor: 16.0
 poison_damage_per_turn: 0.1
+paralysis_stun_chance: 10000

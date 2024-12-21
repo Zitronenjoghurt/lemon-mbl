@@ -6,6 +6,7 @@ pub enum BattleEventFeedbackSourceType {
     None = 0,
     Action = 1,
     TurnEnd = 2,
+    Ability = 3,
 }
 
 impl Default for BattleEventFeedbackSourceType {

@@ -1,0 +1,10 @@
+full_focus:
+  id: 0
+  event_types:
+    - GenerateResource:
+        resource: Momentum
+        amount: 5
+        target: SourceMonster
+  target: OneSelf
+  trigger: EveryTurn
+  priority: 250

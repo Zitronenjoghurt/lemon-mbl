@@ -32,6 +32,10 @@ pub fn damage_type_data_path() -> PathBuf {
     stats_path().join("damage_types.yml")
 }
 
+pub fn translations_data_path() -> PathBuf {
+    data_path().join("translations")
+}
+
 pub fn assets_path() -> PathBuf {
     PathBuf::from("./assets")
 }

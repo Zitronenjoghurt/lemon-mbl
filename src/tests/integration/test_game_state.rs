@@ -1,5 +1,6 @@
 use crate::entities::stored_action::StoredAction;
 use crate::entities::stored_monster::StoredMonster;
+use crate::enums::locale::Locale;
 use crate::enums::save_file_mode::SaveFileMode;
 use crate::states::game_state::GameState;
 use std::path::PathBuf;
@@ -33,4 +34,18 @@ fn test_saving_loading() {
     assert_eq!(game_state, game_state_bin);
     assert_eq!(game_state, game_state_yaml);
     assert_eq!(game_state, game_state_json);
+}
+
+#[test]
+fn test_i18n() {
+    let mut game_state = GameState::default();
+
+    assert_eq!(game_state.get_current_locale(), Locale::English);
+    assert_eq!(game_state.get_monster_name(0).unwrap(), "Test Monster");
+    assert_eq!(game_state.get_monster_description(0).unwrap(), "Its origins remain a mystery...");
+
+    game_state.set_locale(Locale::German);
+    assert_eq!(game_state.get_current_locale(), Locale::German);
+    assert_eq!(game_state.get_monster_name(0).unwrap(), "Test Monster");
+    assert_eq!(game_state.get_monster_description(0).unwrap(), "Der Ursprung dieses Wesens bleibt ein Rätsel...");
 }

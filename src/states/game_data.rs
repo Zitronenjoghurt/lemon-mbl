@@ -1,6 +1,7 @@
 use crate::data_structures::config_data::ConfigData;
 use crate::data_structures::damage_type_library::DamageTypeLibrary;
 use crate::data_structures::data_library::DataLibrary;
+use crate::data_structures::i18n::I18n;
 use crate::data_structures::monster_images::MonsterImages;
 use crate::entities::ability_data::AbilityData;
 use crate::entities::action_data::ActionData;
@@ -15,6 +16,7 @@ pub struct GameData {
     pub damage_types: DamageTypeLibrary,
     pub monster_images: MonsterImages,
     pub config: ConfigData,
+    pub i18n: I18n,
 }
 
 impl GameData {
@@ -26,6 +28,7 @@ impl GameData {
             damage_types: DamageTypeLibrary::from_yaml()?,
             monster_images: MonsterImages::load()?,
             config: ConfigData::from_yaml()?,
+            i18n: I18n::load()?,
         })
     }
 }

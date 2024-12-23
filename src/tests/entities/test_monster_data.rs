@@ -1,3 +1,4 @@
+use crate::enums::locale::Locale;
 use crate::enums::monster_elemental_type::MonsterElementalType;
 use crate::enums::monster_flag::MonsterFlag;
 use crate::enums::monster_physical_type::MonsterPhysicalType;
@@ -9,9 +10,11 @@ fn test_data_integrity() {
     let game_data = get_game_data();
     let monster_data_library = &game_data.monsters;
     let test_monster = monster_data_library.get(0).unwrap();
-    
+
     assert_eq!(test_monster.get_id(), 0);
     assert_eq!(test_monster.get_internal_name(), "test_monster");
+    assert_eq!(game_data.i18n.get_monster_name(&Locale::English, 0).unwrap(), "Test Monster");
+    assert_eq!(game_data.i18n.get_monster_description(&Locale::English, 0).unwrap(), "Its origins remain a mystery...");
     assert_eq!(test_monster.get_vitality(), 50);
     assert_eq!(test_monster.get_potential(), 60);
     assert_eq!(test_monster.get_control(), 10);

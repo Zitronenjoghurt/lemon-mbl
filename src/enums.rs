@@ -14,3 +14,4 @@ pub mod status_effect;
 pub mod battle_event_feedback_source_type;
 pub mod ability_trigger_type;
 pub mod ability_target;
+pub mod locale;

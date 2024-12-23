@@ -1,7 +1,9 @@
 use crate::battle_logic::battle_state::BattleState;
 use crate::data_structures::entity_collection::EntityCollection;
 use crate::entities::stored_monster::StoredMonster;
+use crate::enums::locale::Locale;
 use crate::enums::save_file_mode::SaveFileMode;
+use crate::get_game_data;
 use flate2::read::ZlibDecoder;
 use flate2::write::ZlibEncoder;
 use flate2::Compression;
@@ -14,6 +16,7 @@ use std::path::Path;
 pub struct GameState {
     stored_monsters: EntityCollection<StoredMonster>,
     current_battle: Option<BattleState>,
+    current_locale: Locale,
 }
 
 impl Default for GameState {
@@ -21,6 +24,7 @@ impl Default for GameState {
         Self {
             stored_monsters: EntityCollection::new(),
             current_battle: None,
+            current_locale: Locale::default(),
         }
     }
 }
@@ -127,5 +131,22 @@ impl GameState {
             SaveFileMode::Json => path.extension().is_some_and(|ext| ext == "json"),
             SaveFileMode::Yaml => path.extension().is_some_and(|ext| ext == "yaml" || ext == "yml"),
         }
+    }
+
+    // Localization
+    pub fn get_current_locale(&self) -> Locale {
+        self.current_locale
+    }
+
+    pub fn set_locale(&mut self, locale: Locale) {
+        self.current_locale = locale;
+    }
+
+    pub fn get_monster_name(&self, monster_id: u16) -> Option<String> {
+        get_game_data().i18n.get_monster_name(&self.current_locale, monster_id).map(String::from)
+    }
+
+    pub fn get_monster_description(&self, monster_id: u16) -> Option<String> {
+        get_game_data().i18n.get_monster_description(&self.current_locale, monster_id).map(String::from)
     }
 }

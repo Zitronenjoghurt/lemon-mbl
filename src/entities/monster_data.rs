@@ -8,6 +8,7 @@ use crate::traits::has_id::HasId;
 use crate::traits::has_internal_name::HasInternalName;
 use crate::traits::monster_data_access::MonsterDataAccess;
 use crate::utils::directories::monster_data_path;
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -54,10 +55,9 @@ impl HasDataFileYaml for MonsterData {
 
     #[cfg(feature = "dev")]
     fn postprocess(contents: String) -> String {
-        let processed = contents;
         let internal_name_pattern = r"(?m)^ {2}internal_name:.*\n";
-        let regex = regex::Regex::new(internal_name_pattern).unwrap();
-        regex.replace_all(&processed, "").to_string()
+        let regex = Regex::new(internal_name_pattern).unwrap();
+        regex.replace_all(&contents, "").to_string()
     }
 }
 

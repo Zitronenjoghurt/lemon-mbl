@@ -63,20 +63,9 @@ impl HasDataFileYaml for ActionData {
 
     #[cfg(feature = "dev")]
     fn postprocess(contents: String) -> String {
-        let event_types = BattleEventType::get_identifiers();
-        let mut processed = contents;
-
         let internal_name_pattern = r"(?m)^ {2}internal_name:.*\n";
         let regex = Regex::new(internal_name_pattern).unwrap();
-        processed = regex.replace_all(&processed, "").to_string();
-
-        for event_type in event_types {
-            let pattern = format!(r"!{}", event_type);
-            let regex = Regex::new(&pattern).unwrap();
-            processed = regex.replace_all(&processed, format!("{}:", event_type)).to_string();
-        }
-
-        processed
+        regex.replace_all(&contents, "").to_string()
     }
 }
 

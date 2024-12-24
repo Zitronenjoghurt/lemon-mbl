@@ -15,7 +15,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build
+      - name: Build (no features)
+        run: cargo build --verbose
+
+      - name: Build (all features)
         run: cargo build --all-features --verbose
 
       - name: Cache tarpaulin
@@ -35,7 +38,10 @@ jobs:
       - name: Regenerate game data with mocked assets
         run: make gen-data
 
-      - name: Run tests
+      - name: Run tests (no features)
+        run: cargo test -v
+
+      - name: Run tests (all features)
         run: cargo test --all-features -v
 
       - name: Generate code coverage

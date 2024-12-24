@@ -13,8 +13,8 @@ pub struct DamageTypeLibrary {
 }
 
 impl DamageTypeLibrary {
-    pub fn from_yaml() -> Result<Self, Box<dyn std::error::Error>> {
-        Ok(Self { data: DataLibrary::from_yaml()? })
+    pub fn from_json() -> Result<Self, Box<dyn std::error::Error>> {
+        Ok(Self { data: DataLibrary::from_json()? })
     }
 
     pub fn calculate_damage_factor(

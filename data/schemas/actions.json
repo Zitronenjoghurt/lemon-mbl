@@ -1,0 +1,240 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "patternProperties": {
+    "^[0-9]+$": {
+      "type": "object",
+      "required": [
+        "internal_name",
+        "event_types",
+        "potential_targets",
+        "priority"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "internal_name": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_]+$",
+          "description": "Internal identifier for the action"
+        },
+        "priority": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255,
+          "description": "Higher priority means the events connected to this action will take effect over others"
+        },
+        "event_types": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "required": [
+                  "Damage"
+                ],
+                "properties": {
+                  "Damage": {
+                    "type": "object",
+                    "required": [
+                      "amount",
+                      "damage_types",
+                      "target"
+                    ],
+                    "properties": {
+                      "amount": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 65535
+                      },
+                      "damage_types": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/damageType"
+                        },
+                        "uniqueItems": true
+                      },
+                      "target": {
+                        "$ref": "#/definitions/eventTarget"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "required": [
+                  "Heal"
+                ],
+                "properties": {
+                  "Heal": {
+                    "type": "object",
+                    "required": [
+                      "amount",
+                      "target"
+                    ],
+                    "properties": {
+                      "amount": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 65535
+                      },
+                      "target": {
+                        "$ref": "#/definitions/eventTarget"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "required": [
+                  "GenerateResource"
+                ],
+                "properties": {
+                  "GenerateResource": {
+                    "type": "object",
+                    "required": [
+                      "resource",
+                      "amount",
+                      "target"
+                    ],
+                    "properties": {
+                      "resource": {
+                        "$ref": "#/definitions/resourceType"
+                      },
+                      "amount": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 65535
+                      },
+                      "target": {
+                        "$ref": "#/definitions/eventTarget"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "required": [
+                  "ApplyStatusEffect"
+                ],
+                "properties": {
+                  "ApplyStatusEffect": {
+                    "type": "object",
+                    "required": [
+                      "effect"
+                    ],
+                    "properties": {
+                      "effect": {
+                        "$ref": "#/definitions/statusEffect"
+                      },
+                      "chance": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 10000,
+                        "description": "10000 = 100%, 5000 = 50%, etc."
+                      },
+                      "target": {
+                        "$ref": "#/definitions/eventTarget"
+                      },
+                      "min_turns": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 255
+                      },
+                      "max_turns": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 255
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "potential_targets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/actionTarget"
+          },
+          "uniqueItems": true
+        },
+        "costs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "resource",
+              "amount"
+            ],
+            "properties": {
+              "resource": {
+                "$ref": "#/definitions/resourceType"
+              },
+              "amount": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 65535
+              }
+            }
+          },
+          "uniqueItems": true
+        }
+      }
+    }
+  },
+  "definitions": {
+    "damageType": {
+      "type": "string",
+      "enum": [
+        "Piercing",
+        "Bludgeoning",
+        "Slashing",
+        "Fire",
+        "Frost",
+        "Thunder",
+        "Light",
+        "Dark"
+      ]
+    },
+    "actionTarget": {
+      "type": "string",
+      "enum": [
+        "None",
+        "OneSelf",
+        "SpecificAlly",
+        "SpecificOpponent",
+        "EveryAllyExceptSelf",
+        "EveryAllyIncludingSelf",
+        "EveryOpponent"
+      ]
+    },
+    "eventTarget": {
+      "type": "string",
+      "enum": [
+        "SourceMonster",
+        "SourceTeam",
+        "TargetMonster",
+        "TargetTeam"
+      ]
+    },
+    "resourceType": {
+      "type": "string",
+      "enum": [
+        "Momentum",
+        "Energy",
+        "Hp"
+      ]
+    },
+    "statusEffect": {
+      "type": "string",
+      "enum": [
+        "Poisoned",
+        "Paralyzed"
+      ]
+    }
+  }
+}

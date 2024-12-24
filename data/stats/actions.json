@@ -1,0 +1,99 @@
+{
+  "0": {
+    "internal_name": "test_attack",
+    "event_types": [
+      {
+        "Damage": {
+          "amount": 10,
+          "damage_types": [
+            "Piercing"
+          ],
+          "target": "TargetMonster"
+        }
+      }
+    ],
+    "potential_targets": [
+      "SpecificOpponent"
+    ],
+    "priority": 100,
+    "costs": [
+      {
+        "resource": "Energy",
+        "amount": 3
+      }
+    ]
+  },
+  "1": {
+    "internal_name": "test_heal",
+    "event_types": [
+      {
+        "Heal": {
+          "amount": 5,
+          "target": "TargetMonster"
+        }
+      }
+    ],
+    "potential_targets": [
+      "OneSelf"
+    ],
+    "priority": 100,
+    "costs": [
+      {
+        "resource": "Energy",
+        "amount": 2
+      }
+    ]
+  },
+  "2": {
+    "internal_name": "test_momentum",
+    "event_types": [
+      {
+        "GenerateResource": {
+          "resource": "Momentum",
+          "amount": 5,
+          "target": "TargetMonster"
+        }
+      }
+    ],
+    "potential_targets": [
+      "OneSelf"
+    ],
+    "priority": 200
+  },
+  "3": {
+    "internal_name": "test_poison",
+    "event_types": [
+      {
+        "ApplyStatusEffect": {
+          "effect": "Poisoned",
+          "chance": 10000,
+          "min_turns": 3,
+          "max_turns": 3,
+          "target": "TargetMonster"
+        }
+      }
+    ],
+    "potential_targets": [
+      "SpecificOpponent"
+    ],
+    "priority": 100
+  },
+  "4": {
+    "internal_name": "test_paralysis",
+    "event_types": [
+      {
+        "ApplyStatusEffect": {
+          "effect": "Paralyzed",
+          "chance": 10000,
+          "min_turns": 2,
+          "max_turns": 2,
+          "target": "TargetMonster"
+        }
+      }
+    ],
+    "potential_targets": [
+      "SpecificOpponent"
+    ],
+    "priority": 100
+  }
+}

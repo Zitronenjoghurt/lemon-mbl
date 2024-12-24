@@ -1,0 +1,25 @@
+{
+  "0": {
+    "internal_name": "test_monster",
+    "vitality": 50,
+    "potential": 60,
+    "control": 10,
+    "strength": 13,
+    "resilience": 14,
+    "speed": 15,
+    "technique": 16,
+    "agility": 17,
+    "vigilance": 6000,
+    "focus": 19,
+    "flags": [
+      "Flying"
+    ],
+    "physical_types": [
+      "Construct"
+    ],
+    "elemental_types": [
+      "Force",
+      "Light"
+    ]
+  }
+}

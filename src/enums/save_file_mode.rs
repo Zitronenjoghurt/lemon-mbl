@@ -4,6 +4,5 @@ use serde::{Deserialize, Serialize};
 #[repr(u8)]
 pub enum SaveFileMode {
     Bin = 0,
-    Yaml = 1,
-    Json = 2,
+    Json = 1,
 }

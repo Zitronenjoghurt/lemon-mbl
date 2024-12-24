@@ -1,6 +1,5 @@
-use crate::traits::has_data_file::HasDataFileYaml;
+use crate::traits::has_data_file::HasDataFileJson;
 use crate::traits::has_id::HasId;
-use crate::traits::has_internal_name::HasInternalName;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
@@ -33,20 +32,19 @@ where
 
 impl<T> DataLibrary<T>
 where
-    T: Clone + HasId + HasDataFileYaml + HasInternalName + Serialize + for<'de> Deserialize<'de>,
+    T: Clone + HasId + HasDataFileJson + Serialize + for<'de> Deserialize<'de>,
     T::Id: Serialize + for<'de> Deserialize<'de>,
 {
-    pub fn from_yaml() -> Result<Self, Box<dyn std::error::Error>> {
-        let yaml_file_path = T::data_file_path();
-        let contents_unprocessed = fs::read_to_string(yaml_file_path)?;
-        let contents = T::preprocess(contents_unprocessed);
-        let yaml_entities: HashMap<String, T> = serde_yaml::from_str(&contents)?;
+    pub fn from_json() -> Result<Self, Box<dyn std::error::Error>> {
+        let json_file_path = T::data_file_path();
+        let contents = fs::read_to_string(json_file_path)?;
+        let json_entities: HashMap<T::Id, T> = serde_json::from_str(&contents)?;
 
-        let entities = yaml_entities
+        let entities = json_entities
             .into_iter()
-            .map(|(key, entity)| {
-                let entity = entity.with_internal_name(key);
-                (entity.id(), Arc::new(entity))
+            .map(|(id, entity)| {
+                let entity = entity.with_id(id);
+                (id, Arc::new(entity))
             })
             .collect();
 
@@ -57,17 +55,19 @@ where
 #[cfg(feature = "dev")]
 impl<T> DataLibrary<T>
 where
-    T: Clone + HasId + HasDataFileYaml + HasInternalName + Serialize + for<'de> Deserialize<'de>,
+    T: Clone + HasId + HasDataFileJson + Serialize + for<'de> Deserialize<'de>,
     T::Id: Serialize + for<'de> Deserialize<'de>,
 {
-    pub fn to_yaml(&self) -> Result<String, Box<dyn std::error::Error>> {
-        let plain_map: HashMap<String, T> = self.entities.values().map(|v| {
-            let entity = (*v).as_ref();
-            (entity.internal_name().to_string(), entity.clone())
-        }).collect();
-        
-        let yaml = serde_yaml::to_string(&plain_map)?;
-        Ok(T::postprocess(yaml))
+    pub fn to_json(&self) -> Result<String, Box<dyn std::error::Error>> {
+        use std::collections::BTreeMap;
+
+        let plain_map: BTreeMap<T::Id, T> = self.entities
+            .iter()
+            .map(|(k, v)| (*k, (*v).as_ref().clone()))
+            .collect();
+
+        let json = serde_json::to_string_pretty(&plain_map)?;
+        Ok(json)
     }
 }
 

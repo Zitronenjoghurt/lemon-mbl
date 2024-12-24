@@ -3,7 +3,7 @@ use crate::enums::monster_flag::MonsterFlag;
 use crate::enums::monster_physical_type::MonsterPhysicalType;
 use crate::get_game_data;
 use crate::serialization::arc_ref::ArcRefFromKey;
-use crate::traits::has_data_file::HasDataFileYaml;
+use crate::traits::has_data_file::HasDataFileJson;
 use crate::traits::has_id::HasId;
 use crate::traits::has_internal_name::HasInternalName;
 use crate::traits::monster_data_access::MonsterDataAccess;
@@ -14,8 +14,8 @@ use std::sync::Arc;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct MonsterData {
-    id: u16,
     #[serde(default)]
+    id: u16,
     internal_name: String,
     vitality: u32,
     potential: u32,
@@ -47,16 +47,9 @@ impl ArcRefFromKey for MonsterData {
     }
 }
 
-impl HasDataFileYaml for MonsterData {
+impl HasDataFileJson for MonsterData {
     fn data_file_path() -> PathBuf {
         monster_data_path()
-    }
-
-    #[cfg(feature = "dev")]
-    fn postprocess(contents: String) -> String {
-        let internal_name_pattern = r"(?m)^ {2}internal_name:.*\n";
-        let regex = regex::Regex::new(internal_name_pattern).unwrap();
-        regex.replace_all(&contents, "").to_string()
     }
 }
 
@@ -66,18 +59,15 @@ impl HasId for MonsterData {
     fn id(&self) -> u16 {
         self.get_id()
     }
+
+    fn with_id(self, id: Self::Id) -> Self {
+        Self { id, ..self }
+    }
 }
 
 impl HasInternalName for MonsterData {
     fn internal_name(&self) -> &str {
         self.get_internal_name()
-    }
-
-    fn with_internal_name(self, name: String) -> Self {
-        Self {
-            internal_name: name,
-            ..self
-        }
     }
 }
 

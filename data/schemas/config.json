@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": [ "maximum_damage_factor" ],
+  "properties": {
+    "maximum_damage_factor": {
+      "type": "number",
+      "description": "Maximum damage factor applied on damage by type resonance",
+      "minimum": 0.0,
+      "maximum": 1.7976931348623157e+308
+    },
+    "poison_damage_per_turn": {
+      "type": "number",
+      "description": "Percentage of the monsters max HP lost every turn (normalized).",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "paralysis_stun_chance": {
+      "type": "number",
+      "description": "10000 = 100%, 5000 = 50%, etc.",
+      "minimum": 0,
+      "maximum": 10000
+    }
+  },
+  "additionalProperties": false
+}

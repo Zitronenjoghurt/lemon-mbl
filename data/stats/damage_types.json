@@ -1,0 +1,36 @@
+{
+  "Piercing": {
+    "physical_relations": [
+      {
+        "typing": "Construct",
+        "resonance": "Strong"
+      },
+      {
+        "typing": "Organic",
+        "resonance": "Strong"
+      },
+      {
+        "typing": "Ethereal",
+        "resonance": "Immune"
+      },
+      {
+        "typing": "Slime",
+        "resonance": "Weak"
+      }
+    ],
+    "elemental_relations": [
+      {
+        "typing": "Force",
+        "resonance": "Strong"
+      },
+      {
+        "typing": "Frost",
+        "resonance": "Strong"
+      },
+      {
+        "typing": "Dark",
+        "resonance": "Weak"
+      }
+    ]
+  }
+}

@@ -17,19 +17,19 @@ pub fn stats_path() -> PathBuf {
 }
 
 pub fn monster_data_path() -> PathBuf {
-    stats_path().join("monsters.yml")
+    stats_path().join("monsters.json")
 }
 
 pub fn action_data_path() -> PathBuf {
-    stats_path().join("actions.yml")
+    stats_path().join("actions.json")
 }
 
 pub fn ability_data_path() -> PathBuf {
-    stats_path().join("abilities.yml")
+    stats_path().join("abilities.json")
 }
 
 pub fn damage_type_data_path() -> PathBuf {
-    stats_path().join("damage_types.yml")
+    stats_path().join("damage_types.json")
 }
 
 pub fn translations_data_path() -> PathBuf {

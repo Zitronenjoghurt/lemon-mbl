@@ -82,16 +82,14 @@ fn test_basic_damage_and_heal() {
     let mut game_state = GameState::default();
     let test_path = PathBuf::from("./test_data");
     let bin_path = test_path.join("save_with_battle.bin");
-    let yaml_path = test_path.join("save_with_battle.yaml");
-    let yaml_path2 = test_path.join("save_with_battle_2.yaml");
     let json_path = test_path.join("save_with_battle.json");
+    let json_path2 = test_path.join("save_with_battle2.json");
     game_state.set_current_battle(Some(battle));
     game_state.save(&bin_path, SaveFileMode::Bin).unwrap();
-    game_state.save(&yaml_path, SaveFileMode::Yaml).unwrap();
     game_state.save(&json_path, SaveFileMode::Json).unwrap();
 
     let loaded_bin = GameState::load(&bin_path).unwrap();
-    loaded_bin.save(&yaml_path2, SaveFileMode::Yaml).unwrap();
+    loaded_bin.save(&json_path2, SaveFileMode::Json).unwrap();
 
     assert_eq!(game_state, loaded_bin);
 }
@@ -151,16 +149,14 @@ fn test_poison() {
     let mut game_state = GameState::default();
     let test_path = PathBuf::from("./test_data");
     let bin_path = test_path.join("save_with_poison.bin");
-    let yaml_path = test_path.join("save_with_poison.yaml");
-    let yaml_path2 = test_path.join("save_with_poison_2.yaml");
     let json_path = test_path.join("save_with_poison.json");
+    let json_path2 = test_path.join("save_with_poison2.json");
     game_state.set_current_battle(Some(battle));
     game_state.save(&bin_path, SaveFileMode::Bin).unwrap();
-    game_state.save(&yaml_path, SaveFileMode::Yaml).unwrap();
     game_state.save(&json_path, SaveFileMode::Json).unwrap();
 
     let loaded_bin = GameState::load(&bin_path).unwrap();
-    loaded_bin.save(&yaml_path2, SaveFileMode::Yaml).unwrap();
+    loaded_bin.save(&json_path2, SaveFileMode::Json).unwrap();
 
     assert_eq!(game_state, loaded_bin);
 }
@@ -212,16 +208,14 @@ fn test_paralysis() {
     let mut game_state = GameState::default();
     let test_path = PathBuf::from("./test_data");
     let bin_path = test_path.join("save_with_paralysis.bin");
-    let yaml_path = test_path.join("save_with_paralysis.yaml");
-    let yaml_path2 = test_path.join("save_with_paralysis_2.yaml");
     let json_path = test_path.join("save_with_paralysis.json");
+    let json_path2 = test_path.join("save_with_paralysis2.json");
     game_state.set_current_battle(Some(battle));
     game_state.save(&bin_path, SaveFileMode::Bin).unwrap();
-    game_state.save(&yaml_path, SaveFileMode::Yaml).unwrap();
     game_state.save(&json_path, SaveFileMode::Json).unwrap();
 
     let loaded_bin = GameState::load(&bin_path).unwrap();
-    loaded_bin.save(&yaml_path2, SaveFileMode::Yaml).unwrap();
+    loaded_bin.save(&json_path2, SaveFileMode::Json).unwrap();
 
     assert_eq!(game_state, loaded_bin);
 }

@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "patternProperties": {
+    "^(Piercing|Bludgeoning|Slashing|Fire|Frost|Thunder|Light|Dark)$": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "physical_relations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "typing",
+              "resonance"
+            ],
+            "properties": {
+              "typing": {
+                "$ref": "#/definitions/physicalType"
+              },
+              "resonance": {
+                "$ref": "#/definitions/typeEffectiveness"
+              }
+            }
+          },
+          "uniqueItems": true
+        },
+        "elemental_relations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "typing",
+              "resonance"
+            ],
+            "properties": {
+              "typing": {
+                "$ref": "#/definitions/elementalType"
+              },
+              "resonance": {
+                "$ref": "#/definitions/typeEffectiveness"
+              }
+            }
+          },
+          "uniqueItems": true
+        }
+      }
+    }
+  },
+  "definitions": {
+    "physicalType": {
+      "type": "string",
+      "enum": [
+        "Organic",
+        "Slime",
+        "Ethereal",
+        "Construct"
+      ]
+    },
+    "elementalType": {
+      "type": "string",
+      "enum": [
+        "Force",
+        "Fire",
+        "Frost",
+        "Thunder",
+        "Light",
+        "Dark"
+      ]
+    },
+    "typeEffectiveness": {
+      "type": "string",
+      "enum": [
+        "SuperStrong",
+        "Strong",
+        "Neutral",
+        "Weak",
+        "SuperWeak",
+        "Immune"
+      ]
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "0": {
+    "internal_name": "full_focus",
+    "event_types": [
+      {
+        "GenerateResource": {
+          "resource": "Momentum",
+          "amount": 5,
+          "target": "SourceMonster"
+        }
+      }
+    ],
+    "target": "OneSelf",
+    "trigger": "EveryTurn",
+    "priority": 250
+  }
+}

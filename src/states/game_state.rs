@@ -66,7 +66,6 @@ impl GameState {
 
         match file_mode {
             SaveFileMode::Bin => self.save_bin(data_file)?,
-            SaveFileMode::Yaml => self.save_yaml(data_file)?,
             SaveFileMode::Json => self.save_json(data_file)?,
         }
 
@@ -82,7 +81,6 @@ impl GameState {
 
         match path.extension().and_then(|ext| ext.to_str()) {
             Some("bin") => Ok(Self::load_bin(data_file)?),
-            Some("yaml" | "yml") => Ok(Self::load_yaml(data_file)?),
             Some("json") => Ok(Self::load_json(data_file)?),
             _ => Err("Unsupported file extension".into())
         }
@@ -105,16 +103,6 @@ impl GameState {
         Ok(game_data)
     }
 
-    fn save_yaml(&self, mut data_file: File) -> Result<(), Box<dyn std::error::Error>> {
-        let encoded_data = serde_yaml::to_string(&self)?;
-        data_file.write_all(&encoded_data.into_bytes())?;
-        Ok(())
-    }
-
-    fn load_yaml(data_file: File) -> Result<Self, serde_yaml::Error> {
-        serde_yaml::from_reader(data_file)
-    }
-
     fn save_json(&self, mut data_file: File) -> Result<(), Box<dyn std::error::Error>> {
         let encoded_data = serde_json::to_string_pretty(&self)?;
         data_file.write_all(&encoded_data.into_bytes())?;
@@ -129,7 +117,6 @@ impl GameState {
         match file_mode {
             SaveFileMode::Bin => path.extension().is_some_and(|ext| ext == "bin"),
             SaveFileMode::Json => path.extension().is_some_and(|ext| ext == "json"),
-            SaveFileMode::Yaml => path.extension().is_some_and(|ext| ext == "yaml" || ext == "yml"),
         }
     }
 

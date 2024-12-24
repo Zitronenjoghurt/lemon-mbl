@@ -2,9 +2,8 @@ use crate::enums::damage_type::DamageType;
 use crate::enums::monster_elemental_type::MonsterElementalType;
 use crate::enums::monster_physical_type::MonsterPhysicalType;
 use crate::enums::type_resonance::TypeResonance;
-use crate::traits::has_data_file::HasDataFileYaml;
+use crate::traits::has_data_file::HasDataFileJson;
 use crate::traits::has_id::HasId;
-use crate::traits::has_internal_name::HasInternalName;
 use crate::utils::directories::damage_type_data_path;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -24,7 +23,6 @@ pub struct ElementalTypeRelation {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct DamageTypeData {
     #[serde(default)]
-    internal_name: String,
     damage_type: DamageType,
     physical_relations: Vec<PhysicalTypeRelation>,
     elemental_relations: Vec<ElementalTypeRelation>,
@@ -68,22 +66,13 @@ impl HasId for DamageTypeData {
     fn id(&self) -> Self::Id {
         self.damage_type
     }
-}
 
-impl HasInternalName for DamageTypeData {
-    fn internal_name(&self) -> &str {
-        &self.internal_name
-    }
-
-    fn with_internal_name(self, name: String) -> Self {
-        Self {
-            internal_name: name,
-            ..self
-        }
+    fn with_id(self, id: Self::Id) -> Self {
+        Self { damage_type: id, ..self }
     }
 }
 
-impl HasDataFileYaml for DamageTypeData {
+impl HasDataFileJson for DamageTypeData {
     fn data_file_path() -> PathBuf {
         damage_type_data_path()
     }

@@ -23,10 +23,10 @@ pub struct GameData {
 impl GameData {
     pub fn load() -> Result<Self, Box<dyn std::error::Error>> {
         Ok(Self {
-            monsters: DataLibrary::from_yaml()?,
-            actions: DataLibrary::from_yaml()?,
-            abilities: DataLibrary::from_yaml()?,
-            damage_types: DamageTypeLibrary::from_yaml()?,
+            monsters: DataLibrary::from_json()?,
+            actions: DataLibrary::from_json()?,
+            abilities: DataLibrary::from_json()?,
+            damage_types: DamageTypeLibrary::from_json()?,
             monster_images: MonsterImages::load()?,
             config: ConfigData::from_yaml()?,
             i18n: I18n::load()?,
@@ -42,15 +42,15 @@ mod dev {
 
     impl GameData {
         pub fn dump(&self, data_path: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
-            let monsters_yaml = self.monsters.to_yaml()?;
-            let actions_yaml = self.actions.to_yaml()?;
-            let abilities_yaml = self.abilities.to_yaml()?;
+            let monsters_yaml = self.monsters.to_json()?;
+            let actions_yaml = self.actions.to_json()?;
+            let abilities_yaml = self.abilities.to_json()?;
 
             let stats_path = data_path.join("stats");
             fs::create_dir_all(&stats_path)?;
-            fs::write(stats_path.join("monsters.yml"), &monsters_yaml)?;
-            fs::write(stats_path.join("actions.yml"), &actions_yaml)?;
-            fs::write(stats_path.join("abilities.yml"), &abilities_yaml)?;
+            fs::write(stats_path.join("monsters.json"), &monsters_yaml)?;
+            fs::write(stats_path.join("actions.json"), &actions_yaml)?;
+            fs::write(stats_path.join("abilities.json"), &abilities_yaml)?;
             Ok(())
         }
     }

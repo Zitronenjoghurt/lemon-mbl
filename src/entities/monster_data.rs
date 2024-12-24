@@ -51,6 +51,14 @@ impl HasDataFileYaml for MonsterData {
     fn data_file_path() -> PathBuf {
         monster_data_path()
     }
+
+    #[cfg(feature = "dev")]
+    fn postprocess(contents: String) -> String {
+        let processed = contents;
+        let internal_name_pattern = r"(?m)^ {2}internal_name:.*\n";
+        let regex = Regex::new(internal_name_pattern).unwrap();
+        regex.replace_all(&processed, "").to_string()
+    }
 }
 
 impl HasId for MonsterData {

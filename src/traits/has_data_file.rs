@@ -5,4 +5,8 @@ pub trait HasDataFileYaml {
     fn preprocess(contents: String) -> String {
         contents
     }
+    #[cfg(feature = "dev")]
+    fn postprocess(contents: String) -> String {
+        contents
+    }
 }

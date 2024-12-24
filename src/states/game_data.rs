@@ -33,3 +33,25 @@ impl GameData {
         })
     }
 }
+
+#[cfg(feature = "dev")]
+mod dev {
+    use crate::states::game_data::GameData;
+    use std::fs;
+    use std::path::PathBuf;
+
+    impl GameData {
+        pub fn dump(&self, data_path: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+            let monsters_yaml = self.monsters.to_yaml()?;
+            let actions_yaml = self.actions.to_yaml()?;
+            let abilities_yaml = self.abilities.to_yaml()?;
+
+            let stats_path = data_path.join("stats");
+            fs::create_dir_all(&stats_path)?;
+            fs::write(stats_path.join("monsters.yml"), &monsters_yaml)?;
+            fs::write(stats_path.join("actions.yml"), &actions_yaml)?;
+            fs::write(stats_path.join("abilities.yml"), &abilities_yaml)?;
+            Ok(())
+        }
+    }
+}

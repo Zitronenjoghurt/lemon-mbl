@@ -21,4 +21,19 @@ fn test_monster_image_bundling() {
 fn test_with_cloning() {
     let data = get_game_data();
     let cloned = data.clone();
+    assert_eq!(*data, *cloned);
+}
+
+#[cfg(feature = "dev")]
+mod dev {
+    use crate::get_game_data;
+    use std::path::PathBuf;
+
+    #[test]
+    fn test_dumping() {
+        let data = get_game_data();
+
+        let dump_path = PathBuf::from("./").join("test_data").join("game_data_dump");
+        data.dump(dump_path).unwrap();
+    }
 }

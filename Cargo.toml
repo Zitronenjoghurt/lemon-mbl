@@ -15,7 +15,9 @@ exclude = [
 ]
 
 [features]
-# For development, as of right now it just enables cloning of the full GameData struct.
+# For development, it enables the following features:
+# - Cloning the full GameData struct
+# - Dumping the data in GameData back into its initial file structure
 dev = []
 
 [[bin]]

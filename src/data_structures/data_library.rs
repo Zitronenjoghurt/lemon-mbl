@@ -54,6 +54,23 @@ where
     }
 }
 
+#[cfg(feature = "dev")]
+impl<T> DataLibrary<T>
+where
+    T: Clone + HasId + HasDataFileYaml + HasInternalName + Serialize + for<'de> Deserialize<'de>,
+    T::Id: Serialize + for<'de> Deserialize<'de>,
+{
+    pub fn to_yaml(&self) -> Result<String, Box<dyn std::error::Error>> {
+        let plain_map: HashMap<String, T> = self.entities.values().map(|v| {
+            let entity = (*v).as_ref();
+            (entity.internal_name().to_string(), entity.clone())
+        }).collect();
+        
+        let yaml = serde_yaml::to_string(&plain_map)?;
+        Ok(T::postprocess(yaml))
+    }
+}
+
 impl<T> Serialize for DataLibrary<T>
 where
     T: Clone + HasId + Serialize + for<'de> Deserialize<'de>,

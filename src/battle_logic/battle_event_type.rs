@@ -9,9 +9,9 @@ use crate::enums::damage_type::DamageType;
 use crate::enums::event_target::EventTarget;
 use crate::enums::resource_type::ResourceType;
 use crate::enums::team_side::TeamSide;
-use serde::{Deserialize, Serialize, Serializer};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(u8)]
 pub enum BattleEventType {
     Damage(DamageEventType) = 0,
@@ -96,31 +96,5 @@ impl BattleEventType {
 
     pub fn on_end(&mut self) -> Result<Vec<BattleEventFeedbackEntry>, BattleError> {
         Ok(Vec::new())
-    }
-}
-
-impl Serialize for BattleEventType {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        use serde::ser::SerializeMap;
-        let mut map = serializer.serialize_map(Some(1))?;
-
-        match self {
-            BattleEventType::Damage(event) => {
-                map.serialize_entry("Damage", event)?;
-            }
-            BattleEventType::Heal(event) => {
-                map.serialize_entry("Heal", event)?;
-            }
-            BattleEventType::GenerateResource(event) => {
-                map.serialize_entry("GenerateResource", event)?;
-            }
-            BattleEventType::ApplyStatusEffect(event) => {
-                map.serialize_entry("ApplyStatusEffect", event)?;
-            }
-        }
-        map.end()
     }
 }

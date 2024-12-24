@@ -56,7 +56,7 @@ impl HasDataFileYaml for MonsterData {
     fn postprocess(contents: String) -> String {
         let processed = contents;
         let internal_name_pattern = r"(?m)^ {2}internal_name:.*\n";
-        let regex = Regex::new(internal_name_pattern).unwrap();
+        let regex = regex::Regex::new(internal_name_pattern).unwrap();
         regex.replace_all(&processed, "").to_string()
     }
 }

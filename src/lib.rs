@@ -2,7 +2,7 @@ use flate2::read::ZlibDecoder;
 use once_cell::sync::Lazy;
 use states::game_data::GameData;
 use std::io::Read;
-use std::sync::Arc;
+use std::sync::{Arc, RwLock};
 
 #[cfg(test)]
 mod tests;
@@ -24,6 +24,19 @@ static GAME_DATA: Lazy<Arc<GameData>> = Lazy::new(|| {
     Arc::new(bincode::deserialize(&decompressed_data).unwrap())
 });
 
+static OVERRIDE_DATA: Lazy<RwLock<Option<Arc<GameData>>>> = Lazy::new(|| RwLock::new(None));
+
 pub fn get_game_data() -> Arc<GameData> {
-    GAME_DATA.clone()
+    OVERRIDE_DATA.read().unwrap()
+        .as_ref()
+        .map(Arc::clone)
+        .unwrap_or_else(|| GAME_DATA.clone())
+}
+
+pub fn set_game_data(data: GameData) {
+    *OVERRIDE_DATA.write().unwrap() = Some(Arc::new(data));
+}
+
+pub fn reset_game_data() {
+    *OVERRIDE_DATA.write().unwrap() = None;
 }

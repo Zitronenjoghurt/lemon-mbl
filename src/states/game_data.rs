@@ -8,6 +8,7 @@ use crate::entities::action_data::ActionData;
 use crate::entities::monster_data::MonsterData;
 use serde::{Deserialize, Serialize};
 
+#[cfg_attr(feature = "dev", derive(Clone))]
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct GameData {
     pub monsters: DataLibrary<MonsterData>,

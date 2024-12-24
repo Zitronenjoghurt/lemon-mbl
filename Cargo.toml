@@ -1,7 +1,7 @@
 [package]
 name = "lemon-mbl"
 description = "LeMon - Monster Battle Library is a rust crate which contains game logic for simulated monster battles. The goals are to be easily extendable with new monsters, moves, abilities, etc. and to explore the structure of battle systems you would find in Pokemon or similar creature collectors."
-version = "0.1.7"
+version = "0.1.8"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/Zitronenjoghurt/lemon-mbl"
@@ -13,6 +13,10 @@ exclude = [
     "bin/*",
     "Makefile"
 ]
+
+[features]
+# For development, as of right now it just enables cloning of the full GameData struct.
+dev = []
 
 [[bin]]
 name = "generate-data"

@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
 
+#[cfg_attr(feature = "dev", derive(Clone))]
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
 pub struct I18n {
     translations: HashMap<Locale, I18nEntry>,
@@ -22,9 +23,7 @@ impl I18n {
             .and_then(|entry| entry.monsters.descriptions.get(&monster_id))
             .map(String::as_str)
     }
-}
 
-impl I18n {
     pub fn load() -> Result<Self, Box<dyn std::error::Error>> {
         let mut translations = HashMap::new();
 
@@ -39,6 +38,7 @@ impl I18n {
     }
 }
 
+#[cfg_attr(feature = "dev", derive(Clone))]
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
 pub struct I18nEntry {
     monsters: MonstersI18n,
@@ -59,6 +59,7 @@ impl I18nEntry {
     }
 }
 
+#[cfg_attr(feature = "dev", derive(Clone))]
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
 pub struct MonstersI18n {
     pub names: HashMap<u16, String>,

@@ -3,6 +3,7 @@ use crate::utils::directories::config_data_path;
 use serde::{Deserialize, Serialize};
 use std::fs;
 
+#[cfg_attr(feature = "dev", derive(Clone))]
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct ConfigData {
     #[serde(default = "default_maximum_damage_factor")]

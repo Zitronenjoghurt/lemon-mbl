@@ -6,6 +6,7 @@ use std::fs;
 use std::io::Write;
 use std::path::PathBuf;
 
+#[cfg_attr(feature = "dev", derive(Clone))]
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct MonsterImages(HashMap<u16, Vec<u8>>);
 

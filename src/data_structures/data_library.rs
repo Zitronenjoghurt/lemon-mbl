@@ -6,6 +6,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::sync::Arc;
 
+#[cfg_attr(feature = "dev", derive(Clone))]
 #[derive(Debug, PartialEq)]
 pub struct DataLibrary<T>
 where

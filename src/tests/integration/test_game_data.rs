@@ -15,3 +15,10 @@ fn test_monster_image_bundling() {
     let existing_image_ids = game_data.monster_images.available_ids();
     assert!(existing_image_ids.contains(&0));
 }
+
+#[cfg(feature = "dev")]
+#[test]
+fn test_with_cloning() {
+    let data = get_game_data();
+    let cloned = data.clone();
+}

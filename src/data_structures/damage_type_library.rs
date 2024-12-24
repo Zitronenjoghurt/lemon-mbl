@@ -6,6 +6,7 @@ use crate::enums::monster_physical_type::MonsterPhysicalType;
 use crate::get_game_data;
 use serde::{Deserialize, Serialize};
 
+#[cfg_attr(feature = "dev", derive(Clone))]
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct DamageTypeLibrary {
     data: DataLibrary<DamageTypeData>,

@@ -8,8 +8,10 @@ repository = "https://github.com/Zitronenjoghurt/lemon-mbl"
 exclude = [
     ".assets/*",
     ".github/*",
+    "data/config.yml",
     "data/schemas/*",
     "data/stats/*",
+    "data/translations/*",
     "bin/*",
     "Makefile"
 ]
